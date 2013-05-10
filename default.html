@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  
+  <head>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
+  </head>
+  
+  <body ng-controller="MainCtrl">
+    <!-- top -->
+    <div ng-include="navBarUrl" class="ng-cloak"></div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <!-- left -->
+        <div ng-include="leftSectionUrl" class="ng-cloak left span3"></div>
+        <!-- main -->
+        <div ng-include="mainUrl" class="ng-cloak span9"></div>
+      </div>
+    </div>
+    
+    <!--scripts-->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-mocks.js"></script>    
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/angularjs/1.1.2/angular-resource.min.js"></script>
+    <script src="http://angular-ui.github.com/bootstrap/ui-bootstrap-tpls-0.2.0.js"></script>
+    <script src="app.js"></script>
+    <script src="services/listService.js"></script>
+    <script src="services/serverService.js"></script>
+    <script src="services/candidatesService.js"></script>
+  </body>
+
+</html>
