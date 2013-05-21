@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  
+  <head>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
+  </head>
+  
+  <body ng-controller="KeyboardEventCtrl" keyboard-event>
+    <!-- top -->
+    <div ng-controller="NavBarCtrl" ng-include="navBarUrl" class="ng-cloak"></div>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div ui-view="left" class="ng-cloak left span3"></div>
+        <div ui-view="main" class="ng-cloak span9"></div>
+      </div>
+    </div>
+    
+    <!--scripts-->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-mocks.js"></script>    
+    <script src="http://cdn.jsdelivr.net/angularjs/1.1.2/angular-resource.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.2.0/ui-bootstrap-tpls.js"></script>
+    <script src="http://angular-ui.github.io/ui-router/build/angular-ui-states.min.js"></script>
+    <script src="app.js"></script>
+    <script src="services/listService.js"></script>
+    <script src="services/teacherServices.js"></script>
+    <script src="services/jobServices.js"></script>
+    <script src="services/applicationServices.js"></script>
+    <script src="services/positionsService.js"></script>
+
+    <!--prototype only scripts-->
+    <script src="services/serverService.js"></script>
+  </body>
+
+</html>

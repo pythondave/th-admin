@@ -1,0 +1,30 @@
+body { padding: 60px 0 40px 0; }
+
+/* top */
+.sidebar-nav { padding: 19px 0; }
+
+@media (max-width: 979px) {
+  /* Enable use of floated navbar text */
+  .navbar-text.pull-right {
+    float: none;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+ 
+/* left */
+.left button { width: 180px; display: block; margin-bottom: 8px; }
+.search { margin: 20px 0 10px 0; }
+.search .input-append input { width: 139px; }
+.filter span { font-size: 11px; font-weight: bold; display: block; }
+.filter select { width: 180px; margin-bottom: 5px; }
+.icon-remove { color: gray; margin-left: -45px; cursor: pointer;}
+
+/* main */
+.table { width: 400px; }
+.table td { padding: 3px; }
+.table-nowrap td, th { white-space: nowrap }
+.tr-processing { background-color: gray !important; }
+.summary { font-weight: bold; font-size: 11px; }
+.alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
+.alert-severe-error { background-color: red; color: white; }
