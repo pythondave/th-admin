@@ -21,7 +21,7 @@ app.factory('jobsService', function($http, $q) {
 
   var getDataFromServer = $http.post('/admin/service/candidates-to-process', null, postConfig);
   var setData = function(response) { o.data = response.data.users; return o.data; };
-  o.list = getDataFromServer.then(setData);
+  o.getAndSetData = getDataFromServer.then(setData);
 
   return o;
 });

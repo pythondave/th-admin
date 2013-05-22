@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  
+<head>
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
+  <style>
+    body { margin: 30px; }
+    .table { width: 300px; }
+    td, th { white-space: nowrap }
+  </style>
+</head>
+
+<body ng-controller="KeyboardEventCtrl" keyboard-event>
+  <h3>TH admin dashboard</h3>
+
+  <h4>Prototypes</h4>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Sprint</th>
+        <th>Update</th>
+        <th>Date</th>
+        <th>Link</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>0.1</td>
+        <td>23 Apr 2013</td>
+        <td><a href="http://run.plnkr.co/plunks/Dg0cpuWJLK3HotKIMXmH/">1.1</a></td>
+        <td>Sprint milestone: end of phase 1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0.2</td>
+        <td>11 May 2013</td>
+        <td><a href="http://localhost/th-admin/1/0.2/default.html">1.2</a></td>
+        <td>Sprint milestone: end of phase 2</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0.3</td>
+        <td>20 May 2013</td>
+        <td><a href="http://localhost/th-admin/1/0.3/default.html">1.3</a></td>
+        <td>End-of-sprint prototype</td>
+      </tr>
+      <tr class="warning">
+        <td>2</td>
+        <td>0.1</td>
+        <td>Due ~26 May 2013</td>
+        <td><a href="http://localhost/th-admin/2/0.1/default.html#/teachers">2.1</a></td>
+        <td>Draft end of phase 1 milestone</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr/>
+  <h4>Working Processes</h4>
+  <p>All working processes are a work in progress. Nothing is set in stone.</p>
+
+  <h5>Milestones of a TH sprint</h5>
+  <ol>
+    <li>End of phase 1: we have a prototype which illustrates the idea of what we're going to do on this sprint, without going into too much detail
+    <li>End of phase 2: we have a well-built prototype which does everything we wanted/want in this sprint
+    <li>End of phase 3: we have a live system which does everything we wanted/want in this sprint (including any backend stuff)
+  </ol>
+  <p>Each sprint will be different, and things will be kept flexible - particularly as we learn more about what works best.</p>
+
+  <h5>People of a TH sprint</h5>
+  <ul>
+    <li>Phase 1: AT/AR and RR
+    <li>Towards end of phase 1: share everything with everyone so any potential issues can be raised, and we can plan the remaining phases
+    <li>Phase 2: mainly RR
+    <li>Phase 3: mainly OV (note that work on backend stuff can sometimes begin after the end of phase 1)
+  </ul>
+  <br/>
+</body>
+
+</html>

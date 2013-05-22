@@ -171,21 +171,24 @@ app.run(function($httpBackend, $resource, $q, $timeout) {
         "teacher": {
           "id": 2,
           "fullname": "Alex Reynolds",
-          "url": "/teachers/1234555"
+          "url": "/teachers/1234555",
+          "score": 8
         }
       },
       {
         "teacher": {
           "id": 3,
           "fullname": "Ryan Randall",
-          "url": "/teachers/1234554"
+          "url": "/teachers/1234554",
+          "score": 2
         }
       },
       {
         "teacher": {
           "id": 4,
           "fullname": "Otto Villarin",
-          "url": "/teachers/1234556"
+          "url": "/teachers/1234556",
+          "score": 9
         }
       }
     ]

@@ -21,7 +21,7 @@ app.factory('applicationsService', function($http, $q) {
 
   var getDataFromServer = $http.post('/admin/service/applications', null, postConfig);
   var setData = function(response) { o.data = response.data.applications; return o.data; };
-  o.list = getDataFromServer.then(setData);
+  o.getAndSetData = getDataFromServer.then(setData);
 
   return o;
 });

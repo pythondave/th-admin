@@ -78,7 +78,9 @@ app.controller('TeachersMenuCtrl', function($scope, positionsService) {
 });
 
 app.controller('TeachersCtrl', function($scope, listService, candidatesService) {
-  $scope.candidates = candidatesService.list;
+  candidatesService.getAndSetData.then(function() {
+    $scope.candidates = candidatesService.data;
+  });
   $scope.alerts = new listService.List();
 
   $scope.process = function(index, status) {
@@ -114,7 +116,10 @@ app.controller('TeachersCtrl', function($scope, listService, candidatesService) 
 app.controller('JobsMenuCtrl', function($scope, positionsService) {
 });
 
-app.controller('JobsCtrl', function($scope, listService) {
+app.controller('JobsCtrl', function($scope, listService, jobsService) {
+  jobsService.getAndSetData.then(function() {
+    $scope.jobs = jobsService.data;
+  });
 });
 
 //applications
@@ -122,8 +127,20 @@ app.controller('ApplicationsMenuCtrl', function($scope, positionsService) {
 });
 
 app.controller('ApplicationsCtrl', function($scope, listService, applicationsService) {
-  $scope.applications = applicationsService.list;
+  applicationsService.getAndSetData.then(function() {
+    $scope.applications = applicationsService.data;
+  });
   $scope.alerts = new listService.List();
+
+  var previousSort = { asc: true };
+  $scope.sort = function(name) { //*** WIP - move to service
+    var asc = (name == previousSort.name ? !previousSort.asc : true);
+    $scope.applications.sort(function(a1, a2) {
+      var test = (a1.teacher.score < a2.teacher.score);
+      return (asc ? test : !test);
+    });
+    previousSort = { name: name, asc: asc };
+  };
 
   $scope.process = function(index, status) {
     var application = applicationsService.data[index];

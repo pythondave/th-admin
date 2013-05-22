@@ -28,3 +28,4 @@ body { padding: 60px 0 40px 0; }
 .summary { font-weight: bold; font-size: 11px; }
 .alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
 .alert-severe-error { background-color: red; color: white; }
+.table th .sort { cursor: pointer; }

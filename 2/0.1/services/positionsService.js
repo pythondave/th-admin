@@ -4,7 +4,7 @@ app.factory('positionsService', function($http) {
 
   var getDataFromServer = $http.post('positions', null, postConfig);
   var setData = function(response) { o.data = response.data.positions; return o.data; };
-  o.list = getDataFromServer.then(setData);
+  o.getAndSetData = getDataFromServer.then(setData);
 
   return o;
 });
