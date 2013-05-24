@@ -18,6 +18,7 @@
     
     <!--scripts-->
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-mocks.js"></script>    
@@ -25,14 +26,22 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.2.0/ui-bootstrap-tpls.js"></script>
     <script src="http://angular-ui.github.io/ui-router/build/angular-ui-states.min.js"></script>
     <script src="app.js"></script>
-    <script src="services/listService.js"></script>
-    <script src="services/teacherServices.js"></script>
-    <script src="services/jobServices.js"></script>
-    <script src="services/applicationServices.js"></script>
-    <script src="services/positionsService.js"></script>
+        <!--services-->
+        <script src="shared/services/listService.js"></script>
+        <script src="shared/services/positionServices.js"></script>
+        <script src="shared/services/schoolServices.js"></script>
+        <script src="teachers/teacherServices.js"></script>
+        <script src="jobs/jobServices.js"></script>
+        <script src="applications/applicationServices.js"></script>
+        <!--controllers-->
+        <script src="teachers/teacherControllers.js"></script>
+        <script src="applications/applicationControllers.js"></script>
+        <script src="jobs/jobControllers.js"></script>
+        <!--directives-->
+        <script src="shared/directives.js"></script>
 
     <!--prototype only scripts-->
-    <script src="services/serverService.js"></script>
+    <script src="shared/services/serverServices.js"></script>
   </body>
 
 </html>

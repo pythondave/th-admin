@@ -1,7 +1,7 @@
-<h3>Jobs</h3>
+<h3>Candidates to review</h3>
 
 <div class="alerts" ng-class="positions.getActive().val">
-  <alert ng-repeat="alert in alerts.list" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
 </div>
 
 <div ng-show="candidates.length==0">

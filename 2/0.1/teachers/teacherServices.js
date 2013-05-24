@@ -1,9 +1,9 @@
-app.factory('candidatesService', function($http, $q) {
+app.factory('candidatesService', function($http, $q, listService) {
   var o = {};
   var postConfig = { "headers": { "Content-Type": "application/x-www-form-urlencoded" } };
 
   o.processByIndex = function(index, status) { //returns a promise
-    var candidate = o.data[index];
+    var candidate = o.list.data[index];
     var dataToPost = { teacher: candidate.id, status: status };
     candidate.processing = true; //candidate given this flag while waiting for any processing
 
@@ -16,11 +16,11 @@ app.factory('candidatesService', function($http, $q) {
   };
 
   o.removeByIndex = function(index) {
-    o.data.splice(index, 1);
+    o.list.data.splice(index, 1);
   };
 
   var getDataFromServer = $http.post('/admin/service/candidates-to-process', null, postConfig);
-  var setData = function(response) { o.data = response.data.users; return o.data; };
+  var setData = function(response) { o.list = new listService.List(response.data.users); };
   o.getAndSetData = getDataFromServer.then(setData);
 
   return o;

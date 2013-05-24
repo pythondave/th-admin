@@ -1,22 +1,32 @@
 <h3>Applications to review</h3>
 
 <div class="alerts" ng-class="positions.getActive().val">
-  <alert ng-repeat="alert in alerts.list" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
 </div>
 
 <div ng-show="applications.length==0">
-  <p>All applications have been reviewed!</p>
-  <p>You can refresh the page to check for more.</p>
+  <p>No applications found</p>
 </div>
 
 <div ng-show="applications.length>0" class="summary">{{applications.length}} applications</div>
 <table ng-show="applications.length>0" class="table table-striped table-nowrap">
   <thead>
     <tr>
-      <th>Applicant</th>
-      <th><span class="sort" ng-click="sort('a.teacher.score')">Score</span></th>
-      <th>Subject, Position, School and Country</th>
-      <th>Date</th>
+      <th>
+        <span class="sort" ng-click="sort('teacher.fullname')">Applicant</span>        
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.score')">Score</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('job.subject')">Subject</span>, 
+        <span class="sort" ng-click="sort('job.position')">Position</span>, 
+        <span class="sort" ng-click="sort('job.school')">School</span>, 
+        <span class="sort" ng-click="sort('job.country')">Country</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-date')">Date</span>
+      </th>
       <th></th>
       <th colspan="2">Action</th>
     </tr>
@@ -39,10 +49,10 @@
         <img ng-show="a.processing" src="http://img.cdn.tl/loading1.gif" />
       </td>
       <td>
-        <button class="btn btn-success btn-small" ng-click="process($index, 1)" ng-disabled="a.processing">Put forward</button>
+        <button class="btn btn-success btn-small" ng-click="process(a, 1)" ng-disabled="a.processing">Put forward</button>
       </td>
       <td>
-        <button class="btn btn-danger btn-small" ng-click="process($index, -1)" ng-disabled="a.processing">Decline</button>
+        <button class="btn btn-danger btn-small" ng-click="process(a, -1)" ng-disabled="a.processing">Decline</button>
       </td>
     </tr>
   </tbody>

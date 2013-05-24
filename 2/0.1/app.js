@@ -1,21 +1,63 @@
 var app = angular.module('app', ['ui.bootstrap', 'ngMockE2E', 'ngResource', 'ui.compat']);
 
-// *** WIP - ref: http://plnkr.co/edit/mCt85P?p=preview
-app.directive('keyboardEvent', function() {
-  return function($scope, $elem, attr) {
-    $elem.bind('keydown', function(e) {
-      e.stopPropagation();
-      $scope.$apply(function() { $scope.$emit('keydown', e.which);});
-    });
-    $elem.bind('keypress', function(e) {
-      e.stopPropagation();
-      $scope.$apply(function() { $scope.$emit('keypress', e.which); });
-    });
-    $elem.bind('keyup', function(e) {
-      e.stopPropagation();
-      $scope.$apply(function() { $scope.$emit('keyup', e.which); });
-    });
-  };
+app.run(function($rootScope) {
+  //global data
+  $rootScope.postConfig = { "headers": { "Content-Type": "application/x-www-form-urlencoded" } };
+
+  //create some new generic underscore methods
+  _.mixin({
+    compare: function(a, b) { //compares a and b and returns 1 (a first), -1 (b first) or 0 (equal)
+      return (a>b?1:(b>a?-1:0));
+    },
+    deep: function (o, path) { // extracts a value from a nested object using a string path
+       //ref: https://gist.github.com/furf/3208381
+      // usage: _.deep({ a: { b: { c: { d: ['e', 'f', 'g'] }, 'a.b.c.d[2]'); ==> 'g
+      var keys = path.replace(/\[(["']?)([^\1]+?)\1?\]/g, '.$2').replace(/^\./, '').split('.');
+      var i = 0, n = keys.length;
+      while ((o = o[keys[i++]]) !== null && i < n) {}
+      return i < n ? void 0 : o;
+    },
+    deepCompare: function(o1, o2, path) { //compares 2 deep values (see 'compare' and 'deep')
+      return _.compare(_.deep(o1, path), _.deep(o2, path));
+    },
+    arrayOfValues: function(o) { //returns an array of object values; o: object
+      var a = [];
+      function traverse(o) {
+        for (var i in o) {
+          if (typeof o[i] === 'object') { traverse(o[i]); } else { a.push(o[i]); }
+        }
+      }
+      traverse(o);
+      return a;
+    },
+    objectify: function(x, newPropertyName) { //converts x to an object if it isn't already
+      newPropertyName = newPropertyName || 'val';
+      if (typeof x === 'object') { return x; } else { var o = {}; o[newPropertyName] = x; return o; }
+    },
+    objectifyAll: function(arr, newPropertyName) { //'objectifies' all items of an array
+      return _.map(arr, function(item) { return _(item).objectify(newPropertyName); });
+    },
+    addUniqueId: function(x) {
+      x.id = _.uniqueId();
+      return x;
+    },
+    addUniqueIds: function(arr, newPropertyName) {
+      return _.map(arr, function(item) { return _(item).addUniqueId(newPropertyName); });
+    }
+  });
+});
+
+//navbar (top menu)
+app.controller('NavBarCtrl', function($scope, $state) {
+  $scope.navBarUrl = "shared/navBar.html";
+  $scope.menuItems = [
+    { name: 'teachers', title: 'Teachers' },
+    { name: 'jobs', title: 'Jobs' },
+    { name: 'applications', title: 'Applications' }
+  ];
+  $scope.$on('$stateChangeSuccess', function() {
+    $scope.activeMenuItem = $state.current.name;
+  });
 });
 
 //states (routes) - ref: https://github.com/angular-ui/ui-router
@@ -24,27 +66,27 @@ app.config(function($stateProvider) {
     .state('teachers', {
       url: '/teachers',
       views: {
-        'left': { templateUrl: 'partials/teachers/menu.html', controller: 'TeachersMenuCtrl' },
-        'main': { templateUrl: 'partials/teachers/default.html', controller: 'TeachersCtrl' }
+        'left': { templateUrl: 'teachers/menu.html', controller: 'TeachersMenuCtrl' },
+        'main': { templateUrl: 'teachers/default.html', controller: 'TeachersCtrl' }
       }
     })
     .state('jobs', {
       url: '/jobs',
       views: {
-        'left': { templateUrl: 'partials/jobs/menu.html', controller: 'JobsMenuCtrl' },
-        'main': { templateUrl: 'partials/jobs/default.html', controller: 'JobsCtrl' }
+        'left': { templateUrl: 'jobs/menu.html', controller: 'JobsMenuCtrl' },
+        'main': { templateUrl: 'jobs/default.html', controller: 'JobsCtrl' }
       }
     })
     .state('applications', {
       url: '/applications',
       views: {
-        'left': { templateUrl: 'partials/applications/menu.html', controller: 'ApplicationsMenuCtrl' },
-        'main': { templateUrl: 'partials/applications/default.html', controller: 'ApplicationsCtrl' }
+        'left': { templateUrl: 'applications/menu.html', controller: 'ApplicationsMenuCtrl' },
+        'main': { templateUrl: 'applications/default.html', controller: 'ApplicationsCtrl' }
       }
     });
 });
 
-// *** WIP
+// keyboard events
 app.controller('KeyboardEventCtrl', function($scope, $state) {
   $scope.ctrlAlt = 0;
   $scope.$on('keydown', function(e, keyCode) {
@@ -57,116 +99,4 @@ app.controller('KeyboardEventCtrl', function($scope, $state) {
   $scope.$on('keyup', function(e, keyCode) {
     if (keyCode == 17 || keyCode == 18) { $scope.ctrlAlt = 0; }
   });
-});
-
-//top/navbar
-app.controller('NavBarCtrl', function($scope, $state) {
-  $scope.navBarUrl = "partials/navBar.html";
-  $scope.menuItems = [
-    { name: 'teachers', title: 'Teachers' },
-    { name: 'jobs', title: 'Jobs' },
-    { name: 'applications', title: 'Applications' }
-  ];
-  $scope.$on('$stateChangeSuccess', function() {
-    $scope.activeMenuItem = $state.current.name;
-  });
-});
-
-//teachers
-app.controller('TeachersMenuCtrl', function($scope, positionsService) {
-  $scope.positions = positionsService.list;
-});
-
-app.controller('TeachersCtrl', function($scope, listService, candidatesService) {
-  candidatesService.getAndSetData.then(function() {
-    $scope.candidates = candidatesService.data;
-  });
-  $scope.alerts = new listService.List();
-
-  $scope.process = function(index, status) {
-    var candidate = candidatesService.data[index];
-    var processByIndex = candidatesService.processByIndex(index, status); //promise
-    var alert = {};
-
-    var setProcessedMessage = function() { //promise success
-      alert.message = (status === 1 ? 'Approved ' : 'Declined ') + candidate.fullname;
-      alert.type = (status === 1 ? 'success' : 'error');
-      alert.duration = 5000;
-    };
-
-    var setSevereErrorMessage = function() { //promise error
-      alert.message = 'Error: Unable to process ' + candidate.fullname;
-      alert.type = 'severe-error';
-      alert.duration = 30000;
-    };
-
-    var displayMessage = function() {
-      $scope.alerts.addAndRemoveAfterDelay(alert, true, alert.duration);
-    };
-
-    processByIndex.then(setProcessedMessage, setSevereErrorMessage).then(displayMessage);
-  };
-
-  $scope.closeAlert = function(index) {
-    $scope.alerts.removeByIndex(index);
-  };
-});
-
-//jobs
-app.controller('JobsMenuCtrl', function($scope, positionsService) {
-});
-
-app.controller('JobsCtrl', function($scope, listService, jobsService) {
-  jobsService.getAndSetData.then(function() {
-    $scope.jobs = jobsService.data;
-  });
-});
-
-//applications
-app.controller('ApplicationsMenuCtrl', function($scope, positionsService) {
-});
-
-app.controller('ApplicationsCtrl', function($scope, listService, applicationsService) {
-  applicationsService.getAndSetData.then(function() {
-    $scope.applications = applicationsService.data;
-  });
-  $scope.alerts = new listService.List();
-
-  var previousSort = { asc: true };
-  $scope.sort = function(name) { //*** WIP - move to service
-    var asc = (name == previousSort.name ? !previousSort.asc : true);
-    $scope.applications.sort(function(a1, a2) {
-      var test = (a1.teacher.score < a2.teacher.score);
-      return (asc ? test : !test);
-    });
-    previousSort = { name: name, asc: asc };
-  };
-
-  $scope.process = function(index, status) {
-    var application = applicationsService.data[index];
-    var processByIndex = applicationsService.processByIndex(index, status); //promise
-    var alert = {};
-
-    var setProcessedMessage = function() { //promise success
-      alert.message = (status === 1 ? 'Put forward ' : 'Declined ') + application.fullname + ' - ' + application.subject;
-      alert.type = (status === 1 ? 'success' : 'error');
-      alert.duration = 5000;
-    };
-
-    var setSevereErrorMessage = function() { //promise error
-      alert.message = 'Error: Unable to process ' + application.fullname;
-      alert.type = 'severe-error';
-      alert.duration = 30000;
-    };
-
-    var displayMessage = function() {
-      $scope.alerts.addAndRemoveAfterDelay(alert, true, alert.duration);
-    };
-
-    processByIndex.then(setProcessedMessage, setSevereErrorMessage).then(displayMessage);
-  };
-
-  $scope.closeAlert = function(index) {
-    $scope.alerts.removeByIndex(index);
-  };
 });

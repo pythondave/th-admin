@@ -18,7 +18,7 @@ body { padding: 60px 0 40px 0; }
 .search .input-append input { width: 139px; }
 .filter span { font-size: 11px; font-weight: bold; display: block; }
 .filter select { width: 180px; margin-bottom: 5px; }
-.icon-remove { color: gray; margin-left: -45px; cursor: pointer;}
+.icon-remove { position: relative; color: gray; margin-left: -45px; cursor: pointer; z-index: 2; }
 
 /* main */
 .table { width: 400px; }

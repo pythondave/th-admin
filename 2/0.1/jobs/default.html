@@ -1,0 +1,65 @@
+<h3>Jobs</h3>
+
+<div ng-show="jobs.length==0">
+  <p>No jobs found</p>
+</div>
+
+<div ng-show="jobs.length>0" class="summary">{{jobs.length}} jobs</div>
+<table ng-show="jobs.length>0" class="table table-striped table-nowrap">
+  <thead>
+    <tr>
+      <th>
+        <span class="sort" ng-click="sort('subject')">Subject</span>, 
+        <span class="sort" ng-click="sort('position')">Position</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-applied')">Applied</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-putForward')">Put forward</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-shortlisted')">Shortlisted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-interviewed')">Interviewed</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-offersMade')">Offers made</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-accepted')">Accepted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-rejected')">Rejected</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="j in jobs" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
+      <td>
+        <a ng-href="{{j.url}}" target="_blank">{{j.subject}}, {{j.position}}</a>
+      </td>
+      <td>{{j.applied}}</td>
+      <td>{{j.putForward}}</td>
+      <td>{{j.shortlisted}}</td>
+      <td>{{j.interviewed}}</td>
+      <td>{{j.offersMade}}</td>
+      <td><i class="icon-ok" ng-show="j.accepted"></i></td>
+      <td>{{j.rejected}}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Total</th>
+      <th>{{totals.applied}}</th>
+      <th>{{totals.putForward}}</th>
+      <th>{{totals.shortlisted}}</th>
+      <th>{{totals.interviewed}}</th>
+      <th>{{totals.offersMade}}</th>
+      <th>{{totals.accepted}}</th>
+      <th>{{totals.rejected}}</th>
+    </tr>
+  </tfoot>
+</table>
+<div ng-show="jobs.length>0" class="summary">{{jobs.length}} jobs</div>
