@@ -13,7 +13,7 @@
   <thead>
     <tr>
       <th>
-        <span class="sort" ng-click="sort('teacher.fullname')">Applicant</span>        
+        <span class="sort" ng-click="sort('teacher.fullname')">Applicant</span>
       </th>
       <th>
         <span class="sort" ng-click="sort('-teacher.score')">Score</span>
@@ -34,10 +34,10 @@
   <tbody>
     <tr ng-repeat="a in applications" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
       <td>
-        <a ng-href="{{a.url}}" target="_blank">{{a.teacher.fullname}}</a>
+        <a ng-href="{{a.teacher.profileUrl}}" target="_blank">{{a.teacher.fullname}}</a>
       </td>
       <td>
-        {{a.teacher.score}}
+        <span class="badge" ng-class="badgeClass(a.teacher.score)">{{a.teacher.score}}</span>
       </td>
       <td>
         {{a.job.subject}}, {{a.job.position}}, {{a.job.school}}, {{a.job.country}}

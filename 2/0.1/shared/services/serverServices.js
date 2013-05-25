@@ -5,13 +5,14 @@
 
 app.factory('delayResponseInterceptor', function($q, $timeout) {
   //Can be used to delay all mock responses by a typical (and occasionally atypical) random amount, or fail entirely at a certain rate
+  var serverSpeedMultiplier = 1; //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
   var config = { //configure special values for particular requests here
     //delayLengthMultiplier: standard random server response delay will be multiplied by this (e.g. for requests which are normally longer, say)
     //errorRate: 0: no errors; 1 error every time;
     attributeDefaults: { delayLengthMultiplier: 1, errorRate: 0 }, //these will be used if no specific value is found
     '/admin/service/candidates-to-process': { delayLengthMultiplier: 2 }, //will takes twice as long (on average)
-    '/admin/service/process-candidate': { delayLengthMultiplier: 4, errorRate: 0.2 },
-    '/admin/service/process-application': { delayLengthMultiplier: 4, errorRate: 0.2 }
+    '/admin/service/process-candidate': { delayLengthMultiplier: 4, errorRate: 0.05 },
+    '/admin/service/process-application': { delayLengthMultiplier: 4, errorRate: 0.05 }
   };
   var getConfigValue = function(requestUrl, attributeName, defaultValue) { //use to ease the process of getting config values
     defaultValue = defaultValue || config.attributeDefaults[attributeName];
@@ -25,7 +26,6 @@ app.factory('delayResponseInterceptor', function($q, $timeout) {
   };
   var getStandardRandomServerResponseDelayLength = function() { //returns a random integer
     var randomInteger = Math.round(1000*randomLogNormalValue(-1.2, 0.5)); //typically 100-1000, occasionally 50-100 or 1000-1700
-    var serverSpeedMultiplier = 0.2; //reduce during dev so things work faster, increase (to say 1) when demoing
     return randomInteger * serverSpeedMultiplier;
   };
   var logSampleStandardRandomServerResponseDelayLengths = function(n) { //used for experimentally working out good values for mu and sigma
@@ -82,7 +82,12 @@ app.factory('randomDataService', function() {
   var positions = roles;
   var countries = ['United States','United Kingdom','Afghanistan','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, The Democratic Republic of The','Cook Islands','Costa Rica','Cote Divoire','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guinea','Guinea-bissau','Guyana','Haiti','Heard Island and Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, The Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestinian Territory, Occupied','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saint Helena','Saint Kitts and Nevis','Saint Lucia','Saint Pierre and Miquelon','Saint Vincent and The Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and The South Sandwich Islands','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan, Province of China','Tajikistan','Tanzania, United Republic of','Thailand','Timor-leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Western Sahara','Yemen','Zambia','Zimbabwe'];
   var schoolSuffixes = _(forenames).filter(function() { return Math.random()<0.05; });
+  var twitterUsernames = ['kirkouimet','damenleeturks','calebogden','aaronbushnell','rogie','jacobseethaler','daryl','kolage','VinThomas','ShaunMoynihan','zulsdesign','nckjrvs','timothycd','motherfuton','jayrobinson','cameronmoll','jayman','danielhaim','alagoon','andrewpautler','garrettgee','blakesimkins','gilbertglee','ogvidius','manspaugh','ripplemdk','paul_irish','Anotherdagou','ryanleroux','roybarberuk','_joshnh','todd_coleman','russellsmith21','designer_dean','PtiteNoli','walterstephanie','imfine_thankyou','utroda','NastyaVZ','tiagocamargo','mikebeecham','nimaa','sajtoo','AngelZxxWingZ','ariona_rian','OskarLevinson','feliperibeiros','jonsuh','leevigraham','ryanAmurphy','jsngr','axelbouaziz','kristijantaken','decarola','iamlouisbullock','dbox','molovo','Djeje','antoniopratas','matejsudar','mkalalang','WhatTheFerguson','SiskaFlaurensia','deimler','benhowdle','mds','itolmach','MarkusOkur','ckor','Alvaro_Nistal','bradenhamm','gabediaz','ThisIsJohnBrown','benpeck','pizzulata','haibnu','JuliaYunLiu','vctrfrnndz','daniel_love','redkeg','benefritz','jpadilla_','owlfurty','eldelentes','mambows','max9xs','waqar_alamgir','sjoerd_dijkstra','CrafterSama','calvintennant','smharley','sodevious','razvantugui','FreelanceNathan','renbyrd','adn','jjmpsp','Fitehal','meghanglass','acoops_','cibawoman','iamlouisbullock','desaiguddu','brianmaloney','HugoAlbonete','macvhustle','rizwaniqbal','fabioChannel','vehbikilic','kkbethi','poopsplat','wrightmartin','JeffChausse','faridelnasire','devstrong','odaymashalla','Rafa3mil','meddeg','brampitoyo','arjunchetna','toodlenoodle','iamjamie','jcarlosweb','temonehm','gerwitz','neweravin','hvillega','mozato','alek_djuric','mcmieras','zametniy','jwphillips','Fubaruba','luhman','Betraydan','dvidsilva'];
+  var applicationStatuses = ['applied', 'putForward', 'shortlisted', 'interviewed', 'offersMade', 'accepted', 'rejected'];
 
+  var offsetDateByDays = function(days, date) {
+    return new Date((date || new Date()).getTime() + days*24*60*60*1000);
+  };
   var getRandomInteger = function(from, to) {
     return from+Math.floor(Math.random()*(to-from+1));
   };
@@ -103,6 +108,7 @@ app.factory('randomDataService', function() {
       case 'id': return _.uniqueId();
       case 'fullname': return getRandomArrayItem(forenames) + ' ' + getRandomArrayItem(surnames) + (Math.random()<0.1?getRandomArrayItem(surnameExtensions):'');
       case 'url': return '/some-url-external-to-the-dashboard/' + getRandomInteger(1000000, 10000000);
+      case 'profileUrl': return '/profile-url-external-to-the-dashboard/' + getRandomInteger(1000000, 10000000);
       case 'score': return getRandomInteger(0, 10);
       case 'subject': return getRandomArrayItem(subjects);
       case 'role': return getRandomArrayItem(roles);
@@ -110,13 +116,21 @@ app.factory('randomDataService', function() {
       case 'school': return getRandomArrayItem(['School', 'Ecole']) + ' ' + getRandomArrayItem(['of', 'de', 'de la']) + ' ' + getRandomArrayItem(schoolSuffixes);
       case 'country': return getRandomArrayItem(countries);
       //jobs
-      case 'applied': return getRandomInteger(0, 40);
-      case 'putForward': return getRandomInteger(0, 20);
-      case 'shortlisted': return getRandomInteger(0, 20);
-      case 'interviewed': return getRandomInteger(0, 20);
-      case 'offersMade': return getRandomInteger(0, 20);
-      case 'accepted': return Math.random() < 0.2;
-      case 'rejected': return getRandomInteger(0, 20);
+      case 'numApplied': return getRandomInteger(0, 40);
+      case 'numPutForward': return getRandomInteger(0, 20);
+      case 'numShortlisted': return getRandomInteger(0, 20);
+      case 'numInterviewed': return getRandomInteger(0, 20);
+      case 'numOffersMade': return getRandomInteger(0, 20); //note 'Offers' not 'Offer'
+      case 'numAccepted': return Math.random() < 0.2;
+      case 'numRejected': return getRandomInteger(0, 20);
+      case 'dateApplied': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'datePutForward': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'dateShortlisted': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'dateInterviewed': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'dateOfferMade': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0)); //note 'Offer' not 'Offers'
+      case 'dateAccepted': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'dateRejected': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
+      case 'avatarUrl': return 'http://uifaces.com/faces/_twitter/' + getRandomArrayItem(twitterUsernames) + '_128.jpg';
     }
     return "WIP";
   };
@@ -124,7 +138,8 @@ app.factory('randomDataService', function() {
     var o = {};
     for (var i = 0; i < properties.length; i++) {
       var p = properties[i];
-      o[p] = getRandomDataItem(p);
+      if (typeof p === 'string') o[p] = getRandomDataItem(p);
+      if (typeof p === 'object') o[p.name] = getRandomDataItem(p.type);
     }
     return o;
   };
@@ -147,8 +162,22 @@ app.factory('randomDataService', function() {
   var getRandomApplication = function() {
     return {
       "id": _.uniqueId(),
-      "teacher": getRandomObject(['id', 'fullname', 'url', 'score']),
+      "teacher": getRandomObject(['id', 'fullname', 'profileUrl', 'score']),
       "job": getRandomObject(['id', 'subject', 'position', 'school', 'country']),
+      "date": getRandomIsoDate(new Date('2013-05-01'), new Date())
+    };
+  };
+  var getRandomApplicationForSpecificJob = function() {
+    var teacher = getRandomObject(['id', 'fullname', 'avatarUrl', 'profileUrl', 'score', 'dateApplied', 'datePutForward']);
+    if (Math.random() < 0.5) teacher.dateShortlisted = getRandomIsoDate(new Date(teacher.datePutForward), new Date());
+    if (teacher.dateShortlisted && Math.random() < 0.5) teacher.dateInterviewed = getRandomIsoDate(new Date(teacher.dateShortlisted), new Date());
+    if (teacher.dateInterviewed && Math.random() < 0.5) teacher.dateOfferMade = getRandomIsoDate(new Date(teacher.dateInterviewed), new Date());
+    if (teacher.dateOfferMade && Math.random() < 0.5) teacher.dateAccepted = getRandomIsoDate(new Date(teacher.dateOfferMade), new Date());
+    if (teacher.dateOfferMade && !teacher.dateAccepted && Math.random() < 0.5) teacher.dateRejected = getRandomIsoDate(new Date(teacher.dateOfferMade), new Date());
+
+    return {
+      "id": _.uniqueId(),
+      "teacher": teacher,
       "date": getRandomIsoDate(new Date('2013-05-01'), new Date())
     };
   };
@@ -159,6 +188,7 @@ app.factory('randomDataService', function() {
   o.getRandomArrayOfObjects = getRandomArrayOfObjects;
   o.getRandomArrayOfDataItems = getRandomArrayOfDataItems;
   o.getRandomApplication = getRandomApplication;
+  o.getRandomApplicationForSpecificJob = getRandomApplicationForSpecificJob;
   return o;
 });
 
@@ -167,26 +197,21 @@ app.run(function($httpBackend, $resource, $q, $timeout, randomDataService) {
   //note: $httpBackend requests are at the bottom
 
   //dummy responses (in the form of javascript objects)
-  var positions = {
-    "positions": [
-      { "id": 21, name: "Position 1" },
-      { "id": 22, name: "Position 2" },
-      { "id": 23, name: "Position 3" },
-      { "id": 24, name: "Position 4" },
-      { "id": 25, name: "Position 5" },
-      { "id": 26, name: "Position 6" },
-      { "id": 27, name: "Position 7" }
-    ]
-  };
+  var positions = { "positions": [] };
   var candidatesToProcess = {
-    "users": randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullname', 'url'], length: randomDataService.getRandomInteger(0, 100) })
+    "users": randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullname', 'profileUrl'], length: randomDataService.getRandomInteger(0, 100) })
   };
 
-  var applications = {
-    "applications":  randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplication, length: randomDataService.getRandomInteger(0, 100) })
+  var applicationsResponse = function(method, url, data, headers) {
+    var applications;
+    var params = (data ? JSON.parse(data) : undefined);
+    if (!data) { applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplication, length: randomDataService.getRandomInteger(0, 100) }); }
+    else if (params.jobId) { applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplicationForSpecificJob, length: randomDataService.getRandomInteger(0, 60) }); }
+    var json = { "applications": applications };
+    return [200, json];
   };
 
-  var jobProperties = ['id', 'subject', 'position', 'applied', 'putForward', 'shortlisted', 'interviewed', 'offersMade', 'accepted', 'rejected'];
+  var jobProperties = ['id', 'subject', 'position', 'numApplied', 'numPutForward', 'numShortlisted', 'numInterviewed', 'numOffersMade', 'numAccepted', 'numRejected'];
   var jobsResponse = function() {
     var jobs = {
       "jobs": randomDataService.getRandomArrayOfObjects({ properties: jobProperties, length: randomDataService.getRandomInteger(0, 30) })
@@ -206,7 +231,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, randomDataService) {
   $httpBackend.whenPOST('/admin/service/process-candidate').respond(200, 'processed');
   $httpBackend.whenPOST('/admin/service/candidates-to-process').respond(200, candidatesToProcess);
   $httpBackend.whenPOST('/admin/service/process-application').respond(200, 'processed');
-  $httpBackend.whenPOST('/admin/service/applications').respond(200, applications);
+  $httpBackend.whenPOST('/admin/service/applications').respond(applicationsResponse); //can return different things, depending on options
   $httpBackend.whenPOST('/admin/service/jobs').respond(jobsResponse); //returns something different each time
   $httpBackend.whenPOST('/admin/service/schools').respond(200, schools);
 });

@@ -125,11 +125,18 @@ app.factory('listService', function($timeout) {
       //returns the sum of values at 'path' in arr
       return _.reduce(arr, function(tally, item) { return tally + _(item).deep(path); }, 0);
     };
+    var count = function(arr, path) { //generic - consider moving
+      //returns the count of values at 'path' in arr
+      return _.reduce(arr, function(tally, item) { return tally + (_(item).deep(path) ? 1 : 0); }, 0);
+    };
     o.summarise = function(path) {
       return summarise(o.data, path);
     };
     o.sum = function(path) {
       return sum(o.filteredData, path);
+    };
+    o.count = function(path) {
+      return count(o.filteredData, path);
     };
 
     //filtering

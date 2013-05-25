@@ -1,0 +1,83 @@
+<h3>Job overview</h3>
+
+<div ng-show="applications.length==0">
+  <p>No applications found</p>
+</div>
+
+<div ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>
+<table ng-show="applications.length>0" class="table table-striped table-nowrap">
+  <thead>
+    <tr>
+      <th>
+        <span class="sort" ng-click="sort('teacher.fullname')">Candidate</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.score')">Score</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.dateShortlisted')">Shortlisted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.dateInterviewed')">Interviewed</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.dateOfferMade')">Offer made</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.dateAccepted')">Accepted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-teacher.dateRejected')">Rejected</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="a in applications" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
+      <td>
+        <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 24px; " />
+        <a ng-href="{{a.teacher.profileUrl}}" target="_blank">{{a.teacher.fullname}}</a>
+        <span tooltip="Put forward {{a.teacher.datePutForward | date:'EEE dd MMM yyyy h:mma'}}">
+          <span ng-show="a.teacher.daysSincePutForward < 3" class="new">new<span>
+        </span>
+      </td>
+      <td><span class="badge" ng-class="badgeClass(a.teacher.score)">{{a.teacher.score}}</span></td>
+      <td>
+        <span tooltip="{{a.teacher.dateShortlisted | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.teacher.dateShortlisted"></i>
+        </span>
+      </td>
+      <td>
+        <span tooltip="{{a.teacher.dateInterviewed | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.teacher.dateInterviewed"></i>
+        </span>
+      </td>
+      <td>
+        <span tooltip="{{a.teacher.dateOfferMade | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.teacher.dateOfferMade"></i>
+        </span>
+      </td>
+      <td>
+        <span tooltip="{{a.teacher.dateAccepted | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.teacher.dateAccepted"></i>
+        </span>
+      </td>
+      <td>
+        <span tooltip="{{a.teacher.dateRejected | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.teacher.dateRejected"></i>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Totals</th>
+      <th></th>
+      <th>{{totals.numShortlisted}}</th>
+      <th>{{totals.numInterviewed}}</th>
+      <th>{{totals.numOffersMade}}</th>
+      <th>{{totals.numAccepted}}</th>
+      <th>{{totals.numRejected}}</th>
+    </tr>
+  </tfoot>
+</table>
+<div ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>

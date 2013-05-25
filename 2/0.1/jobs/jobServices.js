@@ -7,6 +7,7 @@ app.factory('jobsService', function($http, $rootScope, listService) {
   //get data
   o.getAndSetData = function(school) {
     if (!school) return;
+    o.list.setData([]); //instantly clear current data
     var getDataFromServer = $http.post('/admin/service/jobs', { schoolId: school.id }, $rootScope.postConfig);
     var setData = function(response) {
       o.list.setData(response.data.jobs);
@@ -29,11 +30,31 @@ app.factory('jobsService', function($http, $rootScope, listService) {
   };
 
   //totals
-  o.getTotals = function() {
+  o.getTotals = function(paths) {
     var totals = {};
-    var paths = ['applied', 'putForward', 'shortlisted', 'interviewed', 'offersMade', 'accepted', 'rejected'];
+    paths = paths || ['numApplied', 'numPutForward', 'numShortlisted', 'numInterviewed', 'numOffersMade', 'numAccepted', 'numRejected'];
     _(paths).each(function(path) { totals[path] = o.list.sum(path); });
     return totals;
+  };
+
+  return o;
+});
+
+app.factory('jobService', function($http, $rootScope, listService) {
+  //initialise
+  var o = {};
+  o.list = new listService.List();
+  o.list.setSortOrderPaths(['subject', 'position']);
+
+  //get data
+  o.getAndSetData = function(jobId) {
+    if (!jobId) return;
+    var getDataFromServer = $http.post('/admin/service/job', { jobId: jobId }, $rootScope.postConfig);
+    var setData = function(response) {
+      o.list.setData(response.data.jobs);
+      $rootScope.$broadcast('jobChanged'); //more than one controller needs to know
+    };
+    return getDataFromServer.then(setData);
   };
 
   return o;

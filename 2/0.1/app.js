@@ -7,6 +7,9 @@ app.run(function($rootScope) {
   //create some new generic underscore methods
   _.mixin({
     compare: function(a, b) { //compares a and b and returns 1 (a first), -1 (b first) or 0 (equal)
+      if (a === undefined && b === undefined) return 0;
+      if (a === undefined) return -1;
+      if (b === undefined) return 1;
       return (a>b?1:(b>a?-1:0));
     },
     deep: function (o, path) { // extracts a value from a nested object using a string path
@@ -14,13 +17,15 @@ app.run(function($rootScope) {
       // usage: _.deep({ a: { b: { c: { d: ['e', 'f', 'g'] }, 'a.b.c.d[2]'); ==> 'g
       var keys = path.replace(/\[(["']?)([^\1]+?)\1?\]/g, '.$2').replace(/^\./, '').split('.');
       var i = 0, n = keys.length;
-      while ((o = o[keys[i++]]) !== null && i < n) {}
+      while ((o = o[keys[i++]]) && i < n) {}
       return i < n ? void 0 : o;
     },
     deepCompare: function(o1, o2, path) { //compares 2 deep values (see 'compare' and 'deep')
+      //console.log('deepCompare', _.deep(o1, path), _.deep(o2, path), _.compare(_.deep(o1, path), _.deep(o2, path)));
       return _.compare(_.deep(o1, path), _.deep(o2, path));
     },
-    arrayOfValues: function(o) { //returns an array of object values; o: object
+    arrayOfValues: function(o) { //returns an array of object values; o: any object (non-circular)
+      //can be useful for generic text-search on a an object
       var a = [];
       function traverse(o) {
         for (var i in o) {
@@ -30,16 +35,16 @@ app.run(function($rootScope) {
       traverse(o);
       return a;
     },
-    objectify: function(x, newPropertyName) { //converts x to an object if it isn't already
+    objectify: function(x, newPropertyName) { //converts x to an object if it isn't one already
       newPropertyName = newPropertyName || 'val';
       if (typeof x === 'object') { return x; } else { var o = {}; o[newPropertyName] = x; return o; }
     },
     objectifyAll: function(arr, newPropertyName) { //'objectifies' all items of an array
       return _.map(arr, function(item) { return _(item).objectify(newPropertyName); });
     },
-    addUniqueId: function(x) {
-      x.id = _.uniqueId();
-      return x;
+    addUniqueId: function(o) { //adds a uniqueId to o
+      o.id = _.uniqueId();
+      return o;
     },
     addUniqueIds: function(arr, newPropertyName) {
       return _.map(arr, function(item) { return _(item).addUniqueId(newPropertyName); });
@@ -75,6 +80,13 @@ app.config(function($stateProvider) {
       views: {
         'left': { templateUrl: 'jobs/menu.html', controller: 'JobsMenuCtrl' },
         'main': { templateUrl: 'jobs/default.html', controller: 'JobsCtrl' }
+      }
+    })
+    .state('job', {
+      url: '/jobs/:jobId',
+      views: {
+        'left': { templateUrl: 'jobs/jobMenu.html', controller: 'JobMenuCtrl' },
+        'main': { templateUrl: 'jobs/job.html', controller: 'JobCtrl' }
       }
     })
     .state('applications', {

@@ -9,10 +9,11 @@
   <p>You can refresh the page to check for more.</p>
 </div>
 
+<div ng-show="candidates.length>0" class="summary">{{candidates.length}} candidates</div>
 <table ng-show="candidates.length>0" class="table table-striped">
   <thead>
     <tr>
-      <th>{{candidates.length}} Candidates</th>
+      <th>Candidate</th>
       <th></th>
       <th colspan="2">Action</th>
     </tr>
@@ -20,7 +21,7 @@
   <tbody>
     <tr ng-repeat="c in candidates" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
       <td>
-        <a ng-href="{{c.url}}" target="_blank">{{c.fullname}}</a>
+        <a ng-href="{{c.profileUrl}}" target="_blank">{{c.fullname}}</a>
       </td>
       <td style="width: 20px;">
         <img ng-show="c.processing" src="http://img.cdn.tl/loading1.gif" />

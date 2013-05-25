@@ -21,11 +21,19 @@ body { padding: 60px 0 40px 0; }
 .icon-remove { position: relative; color: gray; margin-left: -45px; cursor: pointer; z-index: 2; }
 
 /* main */
-.table { width: 400px; }
+.table { margin-bottom: 0; width: auto; }
+.table th { padding: 3px 8px 3px 0; font-size: 14px; }
 .table td { padding: 3px; }
 .table-nowrap td, th { white-space: nowrap }
+.th-type { color: silver; margin-left: -10px; cursor: pointer; }
+.th-type:hover { color: LightGray; }
 .tr-processing { background-color: gray !important; }
 .summary { font-weight: bold; font-size: 11px; }
 .alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
 .alert-severe-error { background-color: red; color: white; }
 .table th .sort { cursor: pointer; }
+.tooltip.in { opacity: 1; }
+.new { color: red; }
+
+/* dev */
+.wip { background-color: yellow; }

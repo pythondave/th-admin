@@ -18,6 +18,15 @@ app.controller('ApplicationsCtrl', function($scope, listService, applicationsSer
     $scope.applications = applicationsService.list.filteredData;
   });
 
+  $scope.badgeClass = function(score, outOf) { //*** WIP - will probably move to a service once discussed
+    outOf = outOf || 10;
+    if (score/outOf > 0.8) return 'badge-success';
+    if (score/outOf > 0.6) return 'badge-warning';
+    if (score/outOf > 0.3) return 'badge-info';
+    if (score/outOf >= 0) return 'badge-important';
+    return '';
+  };
+
   $scope.alerts = new listService.List();
   $scope.process = function(application, status) {
     var process = applicationsService.process(application, status); //promise

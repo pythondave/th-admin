@@ -7,8 +7,9 @@ app.factory('applicationsService', function($http, $q, $rootScope, listService) 
   var postConfig = { "headers": { "Content-Type": "application/x-www-form-urlencoded" } };
 
   //get data
-  o.getAndSetData = function() {
-    var getDataFromServer = $http.post('/admin/service/applications', null, postConfig);
+  o.getAndSetData = function(options) {
+    o.list.setData([]); //instantly clear current data
+    var getDataFromServer = $http.post('/admin/service/applications', options, postConfig);
     var setData = function(response) {
       o.list.setData(response.data.applications);
       $rootScope.$broadcast('applicationsChanged'); //more than one controller needs to know
@@ -46,6 +47,26 @@ app.factory('applicationsService', function($http, $q, $rootScope, listService) 
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
     return postToServer.then(removeFromList).then(stopProcessing, error);
+  };
+
+  //totals
+  o.getTotals = function(paths) {
+    var totals = {};
+    var defaultPaths = [
+      { name: 'numApplied', path: 'teacher.dateApplied' },
+      { name: 'numPutForward', path: 'teacher.datePutForward' },
+      { name: 'numShortlisted', path: 'teacher.dateShortlisted' },
+      { name: 'numInterviewed', path: 'teacher.dateInterviewed' },
+      { name: 'numOffersMade', path: 'teacher.dateOfferMade' },
+      { name: 'numAccepted', path: 'teacher.dateAccepted' },
+      { name: 'numRejected', path: 'teacher.dateRejected' }
+    ];
+    paths = paths || defaultPaths;
+    _(paths).each(function(path) {
+      if ( typeof path === 'string') path = { name: path, path: path };
+      totals[path.name] = o.list.count(path.path);
+    });
+    return totals;
   };
 
   return o;
