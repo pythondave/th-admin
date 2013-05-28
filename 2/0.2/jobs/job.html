@@ -1,0 +1,115 @@
+<h3>Job overview</h3>
+
+<div class="alerts" ng-class="positions.getActive().val">
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
+</div>
+
+<div ng-show="applications.length==0">
+  <p>No applications found</p>
+</div>
+
+<div ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>
+<table ng-show="applications.length>0" class="table table-nowrap">
+  <thead>
+    <tr>
+      <th>
+        <span class="sort" ng-click="sort('teacher.fullname')">Candidate</span>
+      </th>
+      <th></th>
+      <th>
+        <span class="sort" ng-click="sort('-score')">Score</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-dateShortlisted')">Shortlisted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-dateInterviewed')">Interviewed</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-dateOfferMade')">Offer made</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-dateAccepted')">Accepted</span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-dateRejected')">Rejected</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody ng-repeat="a in applications">
+    <tr ng-class="{ 0:'tr-odd', 1:'tr-even' }[$index%2]">
+      <td>
+        <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 24px; " />
+        <span ng-click="a.expanded=!a.expanded" simple-tooltip="{{a.adminNote}}" class="point">
+          <a>{{a.teacher.fullname}}</a>
+          <i ng-show="a.adminNote" class="icon-comment"></i>
+        </span>
+        <span simple-tooltip="Put forward {{a.datePutForward | date:'EEE dd MMM yyyy h:mma'}}" ng-show="a.daysSincePutForward < 3" class="new">new<span>
+      </td>
+      <td style="width: 20px;">
+        <img ng-show="a.processing" src="http://img.cdn.tl/loading1.gif" />
+        <span ng-hide="a.processing" ng-click="a.expanded=!a.expanded" class="point">
+          <i ng-show="a.dirty" class="icon-flag"></i>
+          <span ng-hide="a.dirty">
+            <i ng-show="a.expanded" class="icon-chevron-up"></i>
+            <i ng-hide="a.expanded" class="icon-chevron-down"></i>
+          </span>
+        </span>
+      </td>
+      <td>
+        <span class="badge" ng-class="a.badgeClass">{{a.score}}</span>
+      </td>
+      <td class="toggle" ng-click="toggle(a, 'dateShortlisted')">
+        <span simple-tooltip="{{a.dateShortlisted | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.dateShortlisted"></i>
+        </span>
+      </td>
+      <td class="toggle" ng-click="toggle(a, 'dateInterviewed')">
+        <span simple-tooltip="{{a.dateInterviewed | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.dateInterviewed"></i>
+        </span>
+      </td>
+      <td class="toggle" ng-click="toggle(a, 'dateOfferMade')">
+        <span simple-tooltip="{{a.dateOfferMade | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.dateOfferMade"></i>
+        </span>
+      </td>
+      <td class="toggle" ng-click="toggle(a, 'dateAccepted')">
+        <span simple-tooltip="{{a.dateAccepted | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.dateAccepted"></i>
+        </span>
+      </td>
+      <td class="toggle" ng-click="toggle(a, 'dateRejected')">
+        <span simple-tooltip="{{a.dateRejected | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok" ng-show="a.dateRejected"></i>
+        </span>
+      </td>
+    </tr>
+    <tr ng-show="a.expanded">
+      <td colspan="9">
+        <div style="width:75%; float: left;">
+          <div>
+            <a ng-href="{{a.teacher.profileUrl}}" target="_blank" style="margin-right: 10px;">View profile</a>
+
+            <span ng-repeat="s in scores" class="badge point" ng-class="{true:a.badgeClass, false:s.hoverClass}[$index==a.score];"      ng-click="process(a, 'score', $index)" style="margin-right: 3px;">{{$index}}</span>
+          </div>
+          <textarea style="margin: 5px; width: 100%; min-height: 70px;" ng-model="a.adminNote" ng-change="processWithThrottle(a, 'adminNote', a.adminNote)"></textarea>
+        </div>
+        <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 120px; float: right; " />
+      <td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Totals</th>
+      <th></th>
+      <th></th>
+      <th>{{totals.numShortlisted}}</th>
+      <th>{{totals.numInterviewed}}</th>
+      <th>{{totals.numOffersMade}}</th>
+      <th>{{totals.numAccepted}}</th>
+      <th>{{totals.numRejected}}</th>
+    </tr>
+  </tfoot>
+</table>
+<div ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>

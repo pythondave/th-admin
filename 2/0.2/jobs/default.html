@@ -1,0 +1,84 @@
+<h3>Jobs</h3>
+
+<div ng-show="jobs.length==0">
+  <p>No jobs found</p>
+</div>
+
+
+<div ng-show="jobs.length>0" class="summary">{{jobs.length}} jobs</div>
+<table ng-show="jobs.length>0" class="table table-striped table-nowrap">
+  <thead>
+    <tr>
+      <th>
+        <span class="sort" ng-click="sort('subject')">Subject</span>, 
+        <span class="sort" ng-click="sort('position')">Position</span>
+      </th>
+      <th>
+        <span class="th-type" ng-init="headerType='&lt;'"
+              ng-click="useCompactHeaders=!useCompactHeaders; headerType={true:'&gt;', false:'&lt;'}[useCompactHeaders]">
+          <span tooltip="Compact / Standard">{{headerType}}</span>
+        </span>
+        <span class="sort" ng-click="sort('-numApplied')">
+          <span tooltip="{{header.tips.applied}}">{{header.applied}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numPutForward')">
+          <span tooltip="{{header.tips.putForward}}">{{header.putForward}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numShortlisted')">
+          <span tooltip="{{header.tips.shortlisted}}">{{header.shortlisted}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numInterviewed')">
+          <span tooltip="{{header.tips.interviewed}}">{{header.interviewed}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numOffersMade')">
+          <span tooltip="{{header.tips.offersMade}}">{{header.offersMade}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numAccepted')">
+          <span tooltip="{{header.tips.accepted}}">{{header.accepted}}</span>
+        </span>
+      </th>
+      <th>
+        <span class="sort" ng-click="sort('-numRejected')">
+          <span tooltip="{{header.tips.rejected}}">{{header.rejected}}</span>
+        </span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="j in jobs" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
+      <td>
+        <a ng-href="#/jobs/{{j.id}}">{{j.subject}}, {{j.position}}</a>
+      </td>
+      <td>{{j.numApplied}}</td>
+      <td>{{j.numPutForward}}</td>
+      <td>{{j.numShortlisted}}</td>
+      <td>{{j.numInterviewed}}</td>
+      <td>{{j.numOffersMade}}</td>
+      <td><i class="icon-ok" ng-show="j.numAccepted"></i></td>
+      <td>{{j.numRejected}}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Totals</th>
+      <th>{{totals.numApplied}}</th>
+      <th>{{totals.numPutForward}}</th>
+      <th>{{totals.numShortlisted}}</th>
+      <th>{{totals.numInterviewed}}</th>
+      <th>{{totals.numOffersMade}}</th>
+      <th>{{totals.numAccepted}}</th>
+      <th>{{totals.numRejected}}</th>
+    </tr>
+  </tfoot>
+</table>
+<div ng-show="jobs.length>0" class="summary">{{jobs.length}} jobs</div>
