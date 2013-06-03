@@ -23,6 +23,7 @@ app.run(function($rootScope) {
     schoolNames: requestUrlRoot + 'schoolNames',
     countries: requestUrlRoot + 'countries',
     subjects: requestUrlRoot + 'subjects',
-    positions: requestUrlRoot + 'positions'
+    positions: requestUrlRoot + 'positions',
+    messageTemplate: requestUrlRoot + 'messageTemplate'
   };
 });

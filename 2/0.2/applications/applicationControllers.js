@@ -1,17 +1,18 @@
 app.controller('ApplicationsMenuCtrl', function($scope, applicationsService) {
+
+  var addProperty = function(arr, name, value) { _.each(arr, function(item) { item[name] = value; }); return arr; };
+
   $scope.$on('applicationsChanged', function(e) {
-    $scope.schoolNames = applicationsService.list.summarise('job.schoolName');
-    $scope.countries = applicationsService.list.summarise('job.country');
-    $scope.subjects = applicationsService.list.summarise('job.subject');
-    $scope.positions = applicationsService.list.summarise('job.position');
+    $scope.schoolNames = addProperty(applicationsService.list.summarise('job.schoolName'), 'type', 'Refine');
+    $scope.countries = addProperty(applicationsService.list.summarise('job.country'), 'type', 'Refine');
+    $scope.subjects = addProperty(applicationsService.list.summarise('job.subject'), 'type', 'Refine');
+    $scope.positions = addProperty(applicationsService.list.summarise('job.position'), 'type', 'Refine');
   });
   var getValues = function() {
     return { schoolName: $scope.schoolName, country: $scope.country, subject: $scope.subject,
              position: $scope.position, search: $scope.search };
   };
-  $scope.$watch(getValues, function(values) {
-    console.log(values);
-    applicationsService.filter(values); }, true);
+  $scope.$watch(getValues, function(values) { applicationsService.filter(values); }, true);
 });
 
 app.controller('ApplicationsCtrl', function($scope, listService, applicationsService) {

@@ -8,7 +8,7 @@ app.factory('listService', function($timeout) {
     //list constructor function
     //a list is like an array with methods - the array is list.data
     //we can use this rather than changing the Array prototype
-    //*** TODO: make more use of lodash
+    //*** TODO: make more use of lodash, abstract more things out
     arr = arr || [];
     var o = {};
     o.type = type;

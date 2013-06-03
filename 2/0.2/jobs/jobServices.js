@@ -44,6 +44,8 @@ app.factory('jobsService', function($http, $rootScope, listService) {
 });
 
 app.factory('jobService', function($http, $rootScope, listService) {
+  //*** not yet required
+
   //initialise
   var o = {};
 
@@ -52,7 +54,6 @@ app.factory('jobService', function($http, $rootScope, listService) {
     if (!jobId) return;
     var getDataFromServer = $http.post($rootScope.config.requests.urls.job, { jobId: jobId }, $rootScope.config.postConfig);
     var setData = function(response) {
-      console.log(response);
     };
     return getDataFromServer.then(setData);
   };

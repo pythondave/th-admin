@@ -78,13 +78,13 @@ app.factory('applicationService', function() {
   var o = {};
 
   o.statuses = {
-    applied: { title: 'Applied', shortTitle: 'A', dateField: 'dateApplied' },
-    putForward: { title: 'Put foward', shortTitle: 'PF', dateField: 'datePutForward' },
-    shortlisted: { title: 'Shortlisted', shortTitle: 'S', dateField: 'dateShortlisted' },
-    interviewed: { title: 'Interviewed', shortTitle: 'I', dateField: 'dateInterviewed' },
-    offerMade: { title: 'Offer Made', shortTitle: 'OM', dateField: 'dateOfferMade' },
-    accepted: { title: 'Accepted', shortTitle: 'A', dateField: 'dateAccepted' },
-    rejected: { title: 'Rejected', shortTitle: 'R', dateField: 'dateRejected' }
+    applied: { title: 'Applied', shortTitle: 'A', dateField: 'dateApplied', bitField: 'isApplied' },
+    putForward: { title: 'Put foward', shortTitle: 'PF', dateField: 'datePutForward', bitField: 'isPutForward' },
+    shortlisted: { title: 'Shortlisted', shortTitle: 'S', dateField: 'dateShortlisted', bitField: 'isShortlisted' },
+    interviewed: { title: 'Interviewed', shortTitle: 'I', dateField: 'dateInterviewed', bitField: 'isInterviewed' },
+    offerMade: { title: 'Offer Made', shortTitle: 'OM', dateField: 'dateOfferMade', bitField: 'isOfferMade' },
+    accepted: { title: 'Accepted', shortTitle: 'A', dateField: 'dateAccepted', bitField: 'isAccepted' },
+    rejected: { title: 'Rejected', shortTitle: 'R', dateField: 'dateRejected', bitField: 'isRejected' }
   };
 
   return o;

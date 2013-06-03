@@ -7,6 +7,15 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
   subjectsService.getAndSetData();
   positionsService.getAndSetData();
 
+  /* *** TODO: create and use a filters service - to help better organise & simplify the code in this controller
+  $scope.filters = [
+    { name: 'schoolName', listName: 'schoolNames', service: 'schoolNamesService', label: 'School' },
+    { name: 'country', listName: 'countries', service: 'countriesService', label: 'Country' },
+    { name: 'subject', listName: 'subjects', service: 'subjectsService', label: 'Subjects' },
+    { name: 'position', listName: 'positions', service: 'positionsService', label: 'Positions' }
+  ];
+  */
+
   //refine (work with the data we already have - i.e. no need to get data from the server)
   var refine = function() { jobsService.filter(getFilterRefineValues()); };
   var getFilterRefineValues = function() {
@@ -22,18 +31,19 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
   var search = function() { jobsService.getAndSetData(getFilterSearchValues()); };
   var getFilterSearchValues = function(propertyName) {
     var o = {};
-    if ($scope.schoolName) o.schoolName = $scope.schoolName.name;
-    if ($scope.country) o.country = $scope.country.name;
-    if ($scope.subject) o.subject = $scope.subject.name;
-    if ($scope.position) o.position = $scope.position.name;
+    if ($scope.schoolName && $scope.schoolName.type === 'Search') o.schoolName = $scope.schoolName.val;
+    if ($scope.country && $scope.country.type === 'Search') o.country = $scope.country.val;
+    if ($scope.subject && $scope.subject.type === 'Search') o.subject = $scope.subject.val;
+    if ($scope.position && $scope.position.type === 'Search') o.position = $scope.position.val;
     return o;
   };
 
   //filter change event
   var filterChanged = function(newValue, oldValue) {
     if (newValue===oldValue) return; //no filter change
-    if (!newValue || newValue.type === 'Search') { search(); return; } //selected a 'search'
-    if (newValue.type === 'Refine') { refine(); return; } //selected a 'refine'    
+    if (!newValue && oldValue && oldValue.type === 'Refine') { refine(); return; } //blanked a refine => 'refine'
+    if (newValue && newValue.type === 'Refine') { refine(); return; } //selected a 'refine'
+    search(); //we must need to 'search' (i.e. get data from the server)
   };
 
   $scope.$watch('search', function(newValue, oldValue) { if (newValue!==oldValue) refine(); });
@@ -43,7 +53,7 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
   $scope.$watch('position', function() { filterChanged.apply(this, arguments); });
 
   //update filters
-  var updateFilter = function(name, searchList, refineList, includeRefine) {
+  var updateFilter = function(name, searchList, refineList, includeRefine) { //name = name of the data object used for the filter
     if (!$scope[name]) { //not initiated => add search options
       $scope[name] = [ undefined ];
       _.each(searchList, function(item) { $scope[name].push({ name: item.name, val: item.name, type: 'Search' }); });
@@ -63,6 +73,14 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
     if (!isSet) return;
     //once all data is set... update the filters
     var includeRefine = (jobsService.list.data.length < 200); //don't include refine options if we have 200 rows or more
+
+    //clear any refine selections
+    $scope.search = undefined;
+    if ($scope.schoolName && $scope.schoolName.type === 'Refine') $scope.schoolName = undefined;
+    if ($scope.country && $scope.country.type === 'Refine') $scope.country = undefined;
+    if ($scope.subject && $scope.subject.type === 'Refine') $scope.subject = undefined;
+    if ($scope.position && $scope.position.type === 'Refine') $scope.position = undefined;
+
     updateFilter('schoolNames', schoolNamesService.list.data, jobsService.list.summarise('schoolName'), includeRefine && !$scope.schoolName);
     updateFilter('countries', countriesService.list.data, jobsService.list.summarise('country'), includeRefine && !$scope.country);
     updateFilter('subjects', subjectsService.list.data, jobsService.list.summarise('subject'), includeRefine && !$scope.subject);
@@ -72,7 +90,6 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
 
 app.controller('JobsCtrl', function($scope, jobsService) {
   $scope.sort = jobsService.list.sort;
-  //$scope.totals = {};
 
   //headers
   var standardHeaders = { applied: 'Applied', putForward: 'Put forward', shortlisted: 'Shortlisted', interviewed: 'Interviewed', offersMade: 'Offers made', accepted: 'Accepted', rejected: 'Rejected' };
@@ -83,15 +100,6 @@ app.controller('JobsCtrl', function($scope, jobsService) {
   });
 
   var getFields = function(requestParams) {
-    /*
-    var fieldNames = ['subject', 'position', 'schoolName', 'country'];
-    var fields = { subject: {}, position: {}, schoolName: {}, country: {} };
-    fields.subject = { show: !requestParams.subject, precedingCount: 0 };
-    fields.position = { show: !requestParams.position, precedingCount: (requestParams.subject ? 0 : 1) };
-    fields.schoolName =  { show: !requestParams.schoolName, precedingCount: fields.position.precedingCount + (requestParams.position ? 0 : 1) };
-    fields.country = { show: !requestParams.country, precedingCount: fields.schoolName.precedingCount + (requestParams.schoolName ? 0 : 1) };
-    fields.count = fields.country.precedingCount + (requestParams.country ? 0 : 1);
-    */
     var fields = {}, i = 0;
     if (!requestParams.subject) { fields.subject = { index: i }; i++; }
     if (!requestParams.position) { fields.position = { index: i }; i++; }
@@ -103,6 +111,7 @@ app.controller('JobsCtrl', function($scope, jobsService) {
 
   $scope.$on('jobsChanged', function(e) {
     $scope.fields = getFields(jobsService.requestParams);
+    $scope.unrefinedJobs = jobsService.list.data;
     $scope.jobs = jobsService.list.filteredData;
     $scope.totals = jobsService.getTotals();
   });
@@ -156,9 +165,10 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
     application.dirty = true;
     $scope.debounceFunction();
   };
-  $scope.process = function(application, propertyName, newPropertyValue) {
-    var hasValue = !!application[propertyName];
-    var dataToPost = {}; dataToPost[propertyName] = newPropertyValue;
+  $scope.process = function(application, propertyName, newPropertyValue, additionalOptions) {
+    //*** TODO: can be simplified
+    additionalOptions = additionalOptions || {};
+    var dataToPost = additionalOptions.additionalDataToPost || {}; dataToPost[propertyName] = newPropertyValue;
     var process = applicationsService.process(application, dataToPost, { removeFromList: false }); //promise
     var alert = {};
 
@@ -170,7 +180,8 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
         application.badgeClass = badgeClass(newPropertyValue, 10);
       } else if (propertyName === 'adminNote') {
       } else {
-        if (!newPropertyValue) { delete application[propertyName]; } else { application[propertyName] = (new Date()).toISOString(); }
+        var dateField = additionalOptions.field.dateField;
+        if (!newPropertyValue) { delete application[dateField]; } else { application[dateField] = (new Date()).toISOString(); }
       }
     };
     var setProcessedMessage = function() { //promise success
@@ -196,21 +207,18 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
     applicationService.application = application;
     applicationService.field = applicationService.statuses[fieldName];
     var isTicked = !!application[applicationService.field.dateField];
-    console.log('isTicked' + isTicked);
-
     var opts = { backdrop: true, keyboard: true, backdropFade: true, backdropClick: true };
 
-    if (isTicked) {
-      _.extend(opts, { templateUrl: 'jobs/job/untickField.html', controller: 'UntickJobFieldController' });
-      $dialog.dialog(opts).open().then(afterClose);
-    } else {
-      _.extend(opts, { templateUrl: 'jobs/job/tickField.html', controller: 'TickJobFieldController' });
-      var afterClose = function(response) {
-        console.log(response);
-        //$scope.process(application, propertyName, !application[propertyName]);
-      };
-      $dialog.dialog(opts).open().then(afterClose);
-    }
+    var afterClose = function(response) {
+      if (!response.doIt) return;
+      var additionalDataToPost = (response.sendMessage ? { message: response.message } : undefined );
+      var additionalOptions = { additionalDataToPost: additionalDataToPost, field: applicationService.field };
+      $scope.process(application, applicationService.field.bitField, !isTicked, additionalOptions);
+    };
+
+    if (isTicked) _.extend(opts, { templateUrl: 'jobs/job/untickField.html', controller: 'UntickJobFieldController' });
+    if (!isTicked)  _.extend(opts, { templateUrl: 'jobs/job/tickField.html', controller: 'TickJobFieldController' });
+    $dialog.dialog(opts).open().then(afterClose);
   };
   $scope.closeAlert = function(index) {
     $scope.alerts.removeByIndex(index);
@@ -218,13 +226,23 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
 });
 
 
-app.controller('TickJobFieldController', function($scope, dialog, applicationService){
+app.controller('TickJobFieldController', function($scope, dialog, applicationService, messageTemplateService){
   $scope.application = applicationService.application;
   $scope.field = applicationService.field;
 
-  console.log($scope.application, $scope.application.teacher, $scope.application.teacher.fullname, applicationService.currentPropertyName, $scope.field['title']);
-  $scope.close = function(result) {
-    dialog.close(result);
+  ///set message (get the template)
+  var setMessage = function() {
+    var fullname = $scope.application.teacher.fullname;
+    $scope.message = messageTemplateService.replacePlaceholder(messageTemplateService.text, 'fullname', fullname);
+  };
+  var type = 'jobTick' + applicationService.field['title'].replace(' ', '');
+  messageTemplateService.getAndSetData({ type: type }).then(setMessage);
+
+  $scope.close = function(doIt) {
+    var o = { source: 'tick', field: $scope.field, doIt: doIt };
+    if (doIt) o.sendMessage = $scope.sendMessage;
+    if (doIt && o.sendMessage) o.message = $scope.message;
+    dialog.close(o);
   };
 });
 
@@ -232,7 +250,8 @@ app.controller('UntickJobFieldController', function($scope, dialog, applicationS
   $scope.application = applicationService.application;
   $scope.field = applicationService.field;
 
-  $scope.close = function(result) {
-    dialog.close(result);
+  $scope.close = function(doIt) {
+    var o = { source: 'untick', field: $scope.field, doIt: doIt };
+    dialog.close(o);
   };
 });

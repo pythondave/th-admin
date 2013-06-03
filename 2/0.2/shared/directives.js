@@ -22,6 +22,7 @@ app.directive('simpleTooltip', function ($compile) {
     scope: '=',
     controller: function ($scope, $element) {
       var c, p = $element; //child and parent elements
+
       var getElementPosition = function(el) {
         return { t: el.offset().top, l: el.offset().left, w: el.prop('offsetWidth'), h: el.prop('offsetHeight') };
       };

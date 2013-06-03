@@ -6,10 +6,10 @@
 app.factory('delayResponseInterceptor', function($q, $timeout, $rootScope) {
   //Can be used to delay all mock responses by a typical (and occasionally atypical) random amount, or fail entirely at a certain rate
   var serverSpeedMultiplier = _.firstDefined($rootScope.serverSpeedMultiplierOverride, $rootScope.config.requests.serverSpeedMultiplier, 0.3); //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
-  var logPostData = true;
   var config = { //configure special values for particular requests here
     //delayLengthMultiplier: standard random server response delay will be multiplied by this (e.g. for requests which are normally longer, say)
     //errorRate: 0: no errors; 1 error every time;
+    logRequestsToConsole: false, //change to true to monitor server requests in the console window
     attributeDefaults: { delayLengthMultiplier: 1, errorRate: 0 }, //these will be used if no specific value is found
     '/admin/service/teachers': { delayLengthMultiplier: 2 }, //will takes twice as long (on average)
     '/admin/service/process-teacher': { delayLengthMultiplier: 4, errorRate: 0.05 },
@@ -51,8 +51,9 @@ app.factory('delayResponseInterceptor', function($q, $timeout, $rootScope) {
     //note that we need to resolve the httpRequest twice - once to get the url (to get related config values), and then again after the delay
     var responseInfo;
     var getResponseInfo = function(response) {
-      if (logPostData && response.config.method === 'POST') console.log('SERVER REQUEST: ', response.config.url, 'PARAMS: ', response.config.data);
-      //if (logPostData && response.config.data) console.log(response.config.data);
+      if (config.logRequestsToConsole && response.config.method === 'POST') {
+        console.log('SERVER REQUEST: ', response.config.url, 'PARAMS: ', response.config.data);
+      }
       responseInfo = response;
       return httpRequest; //use the same promise
     };
@@ -204,6 +205,8 @@ app.factory('randomDataService', function() {
   o.getRandomObject = getRandomObject;
   o.getRandomArrayOfObjects = getRandomArrayOfObjects;
   o.getRandomArrayOfDataItems = getRandomArrayOfDataItems;
+  o.getRandomSentence = getRandomSentence;
+  o.getRandomParagraph = getRandomParagraph;
   o.getRandomApplication = getRandomApplication;
   o.getRandomApplicationForSpecificJob = getRandomApplicationForSpecificJob;
   return o;
@@ -269,6 +272,17 @@ app.run(function($httpBackend, $resource, $q, $timeout, randomDataService) {
   var positionsRaw = ['Classroom teacher','Early Years / Kindergarten Teacher','Head of Department','Primary / Elementary Teacher','Head of School','Counsellor','Curriculum Coordinator','Deputy Head / Vice Principal','Director of Studies','Educational Psychologist','English as a Foreign Language Teacher','Head of Primary / Elementary','Head of Secondary','Head of Section','Head of Year (pastoral)','IB PYP Coordinator','IB MYP Coordinator','IB DP Coordinator','Librarian','Other Position','Special Needs Teacher','Subject Leader','Teaching Assistant'];
   var positions = { "positions": _.map(positionsRaw, function(name) { return { name: name }; }) };
 
+  var messageTemplateResponse = function(method, url, data, headers) {
+    var params = (data ? JSON.parse(data) : {});
+    var text = 'Dear [[fullname]],\n\n' +
+      '(Template for "' + params.type + '")\n\n' +
+      randomDataService.getRandomParagraph() + '\n\n' +
+      randomDataService.getRandomSentence() + '\n\n' +
+      'Sincerely';
+    var messageTemplate = { text: text };
+    return [200, messageTemplate];
+  };
+
   //$httpBackend requests
   //Note: url rule - all lower case, words separated with a hyphen
     $httpBackend.whenGET(/.html/).passThrough();
@@ -286,4 +300,5 @@ app.run(function($httpBackend, $resource, $q, $timeout, randomDataService) {
     $httpBackend.whenPOST('/admin/service/countries').respond(200, countries);
     $httpBackend.whenPOST('/admin/service/subjects').respond(200, subjects);
     $httpBackend.whenPOST('/admin/service/positions').respond(200, positions);
+    $httpBackend.whenPOST('/admin/service/messageTemplate').respond(messageTemplateResponse);
 });

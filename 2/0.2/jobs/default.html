@@ -5,7 +5,13 @@
 </div>
 
 
-<div ng-show="jobs.length>0" class="summary">{{jobs.length}} vacancies</div>
+<div ng-show="jobs.length>0" class="summary">
+  <span>{{jobs.length}} vacancies</span><span ng-show="unrefinedJobs.length==200">*</span>
+  <span ng-show="unrefinedJobs.length==200" style="color: silver; margin-left: 30px; ">
+    <span ng-show="jobs.length==200">* there may be more, but 200 is the limit. Use the filters to narrow down your search.</span>
+    <span ng-hide="jobs.length==200">* there may be more, but the original request was limited. Use the filters to narrow down your search.</span>
+  </span>
+</div>
 <div class="table-container">
   <table ng-show="jobs.length>0" class="table table-striped table-nowrap table-jobs">
     <thead>
@@ -30,40 +36,40 @@
         <th class="th-center">
           <span class="th-type" ng-init="headerType='&lt;'"
                 ng-click="useCompactHeaders=!useCompactHeaders; headerType={true:'&gt;', false:'&lt;'}[useCompactHeaders]">
-            <span tooltip="Compact / Standard">{{headerType}}</span>
+            <span simple-tooltip="Compact / Standard">{{headerType}}</span>
           </span>
           <span class="sort" ng-click="sort('-numApplied')">
-            <span tooltip="{{header.tips.applied}}">{{header.applied}}</span>
+            <span simple-tooltip="{{header.tips.applied}}">{{header.applied}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-numPutForward')">
-            <span tooltip="{{header.tips.putForward}}">{{header.putForward}}</span>
+            <span simple-tooltip="{{header.tips.putForward}}">{{header.putForward}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-numShortlisted')">
-            <span tooltip="{{header.tips.shortlisted}}">{{header.shortlisted}}</span>
+            <span simple-tooltip="{{header.tips.shortlisted}}">{{header.shortlisted}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-numInterviewed')">
-            <span tooltip="{{header.tips.interviewed}}">{{header.interviewed}}</span>
+            <span simple-tooltip="{{header.tips.interviewed}}">{{header.interviewed}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-numOffersMade')">
-            <span tooltip="{{header.tips.offersMade}}">{{header.offersMade}}</span>
+            <span simple-tooltip="{{header.tips.offersMade}}">{{header.offersMade}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-isAccepted')">
-            <span tooltip="{{header.tips.accepted}}">{{header.accepted}}</span>
+            <span simple-tooltip="{{header.tips.accepted}}">{{header.accepted}}</span>
           </span>
         </th>
         <th class="th-center">
           <span class="sort" ng-click="sort('-numRejected')">
-            <span tooltip="{{header.tips.rejected}}">{{header.rejected}}</span>
+            <span simple-tooltip="{{header.tips.rejected}}">{{header.rejected}}</span>
           </span>
         </th>
       </tr>

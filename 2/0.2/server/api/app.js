@@ -303,6 +303,66 @@ app.controller('mainController', function($scope, $rootScope, $http) {
         {
           dataToPost: { applicationId: 123, isDeclined: true },
           description: 'Declines an application'
+        },
+        {
+          dataToPost: { applicationId: 123, isShortlisted: true },
+          description: 'Marks application as shortlisted'
+        },
+        {
+          dataToPost: { applicationId: 123, isShortlisted: true, message: 'This is a message...' },
+          description: 'Marks application as shortlisted and sends the message'
+        },
+        {
+          dataToPost: { applicationId: 123, isShortlisted: false },
+          description: 'Marks application as not shortlisted'
+        },
+        {
+          dataToPost: { applicationId: 123, isInterviewed: true },
+          description: 'Marks application as interviewed'
+        },
+        {
+          dataToPost: { applicationId: 123, isInterviewed: true, message: 'This is a message...' },
+          description: 'Marks application as interviewed and sends the message'
+        },
+        {
+          dataToPost: { applicationId: 123, isInterviewed: false },
+          description: 'Marks application as not interviewed'
+        },
+        {
+          dataToPost: { applicationId: 123, isOfferMade: true },
+          description: 'Marks application as "offer made"'
+        },
+        {
+          dataToPost: { applicationId: 123, isOfferMade: true, message: 'This is a message...' },
+          description: 'Marks application as "offer made" and sends the message'
+        },
+        {
+          dataToPost: { applicationId: 123, isOfferMade: false },
+          description: 'Marks application as not "offer made"'
+        },
+        {
+          dataToPost: { applicationId: 123, isAccepted: true },
+          description: 'Marks application as accepted'
+        },
+        {
+          dataToPost: { applicationId: 123, isAccepted: true, message: 'This is a message...' },
+          description: 'Marks application as accepted and sends the message'
+        },
+        {
+          dataToPost: { applicationId: 123, isAccepted: false },
+          description: 'Marks application as not accepted'
+        },
+        {
+          dataToPost: { applicationId: 123, isRejected: true },
+          description: 'Marks application as rejected'
+        },
+        {
+          dataToPost: { applicationId: 123, isRejected: true, message: 'This is a message...' },
+          description: 'Marks application as rejected and sends the message'
+        },
+        {
+          dataToPost: { applicationId: 123, isRejected: false },
+          description: 'Marks application as not rejected'
         }
       ]
     },
@@ -351,6 +411,34 @@ app.controller('mainController', function($scope, $rootScope, $http) {
         {
           dataToPost: undefined,
           description: 'No parameters'
+        }
+      ]
+    },
+    {
+      group: 'Shared',
+      url: requestUrlRoot + 'messageTemplate',
+      description: 'Get an message template',
+      sprintAdded: 2, sprintLastUpdated: 2,
+      queries: [
+        {
+          dataToPost: { type: 'jobTickShortlisted' },
+          description: 'Used when marking an application as shortlisted.'
+        },
+        {
+          dataToPost: { type: 'jobTickInterviewed' },
+          description: 'Used when marking an application as interviewed.'
+        },
+        {
+          dataToPost: { type: 'jobTickOfferMade' },
+          description: 'Used when marking an application as "offer made".'
+        },
+        {
+          dataToPost: { type: 'jobTickAccepted' },
+          description: 'Used when marking an application as accepted.'
+        },
+        {
+          dataToPost: { type: 'jobTickRejected' },
+          description: 'Used when marking an application as rejected.'
         }
       ]
     }
