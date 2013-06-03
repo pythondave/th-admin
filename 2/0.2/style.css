@@ -1,50 +1,83 @@
+/* page */
 body { padding: 60px 0 40px 0; }
 
-/* top */
+/* top menu */
 .sidebar-nav { padding: 19px 0; }
+.navbar .brand { padding: 0; margin: 0; }
 
 @media (max-width: 979px) {
-  /* Enable use of floated navbar text */
+  body { padding: 0 0 40px 0; }
+  .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner { padding: 0; }
   .navbar-text.pull-right {
     float: none;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 0 5px;
+    margin: 0; 
   }
 }
- 
-/* left */
-.left button { width: 180px; display: block; margin-bottom: 8px; }
+
+@media (max-width: 767px) {
+  .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top { margin: 0; }
+}
+.navbar .container-fluid { background-color: #272737; }
+.navbar-inverse .nav .active>a, .navbar-inverse .nav .active>a:hover, .navbar-inverse .nav .active>a:focus { background-color: rgb(13, 19, 48); }
+
+/* left menu */
+.left { max-width: 260px; }
+.left button { width: 240px; display: block; margin-bottom: 8px; }
 .search { margin: 20px 0 10px 0; }
-.search .input-append input { width: 139px; }
+.search .input-append input { width: 199px; }
 .filter span { font-size: 11px; font-weight: bold; display: block; }
-.filter select { width: 180px; margin-bottom: 5px; }
+.filter select { width: 240px; margin-bottom: 5px; }
 .icon-remove { position: relative; color: gray; margin-left: -45px; cursor: pointer; z-index: 2; }
 
-/* main */
-.table { margin-bottom: 0; width: auto; }
-.table th { padding: 3px 8px 3px 0; font-size: 14px; }
-.table td { padding: 3px; }
-.table-nowrap td, th { white-space: nowrap }
-.th-type { color: silver; margin-left: -10px; cursor: pointer; }
-.th-type:hover { color: LightGray; }
-.tr-processing { background-color: gray !important; }
-.summary { font-weight: bold; font-size: 11px; }
-.alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
-.alert-severe-error { background-color: red; color: white; }
-.table th .sort { cursor: pointer; }
-.tooltip.in { opacity: 1; }
-.new { color: red; }
-.toggle { text-align: center !important; }
-.toggle:hover { background-color: Gainsboro !important; cursor: pointer; }
-.icon-pencil { margin: 0; padding: 0; }
-.tr-odd { background-color: #f9f9f9; }
-.table tbody+tbody { border-top: 0 }
-.point { cursor: pointer; }
-.success-hover:hover { background-color: #468847; }
-.warning-hover:hover { background-color: #f89406; }
-.info-hover:hover { background-color: #3a87ad; }
-.important-hover:hover { background-color: #b94a48; }
-.icon-chevron-up:hover, .icon-chevron-down:hover { background-color: Gainsboro }
+/* shared */
+  h3 { margin: 5px 0 20px 0; }
+  .float-immediate-child-spans > span { float: left; }
+  a.float-immediate-child-spans:hover > span { text-decoration: underline; }
+
+  /* table */
+  .table-container { margin: 0 100px 0 0; padding: 0 100px 0 0; }
+  .table { margin-bottom: 0; width: auto; }
+  .table .sort { cursor: pointer; }
+  .table .sort:hover { text-decoration: underline; }
+  /* tr */
+  .table .tr-processing { background-color: gray !important; }
+  .table .tr-odd { background-color: #f9f9f9; }
+  .tr-narrow, .tr-narrow td, .tr-narrow [class*="span"] { line-height: 16px; min-height: 16px; }
+  /* th and td */
+  .table-nowrap th, .table-nowrap td { white-space: nowrap }
+  /* th */
+  .table th { font-size: 14px; }
+  .table .th-left { text-align: left; padding: 3px 8px 3px 0; }
+  .table .th-center { text-align: center; padding: 3px 4px 3px 4px; }
+  .table .th-type { color: silver; margin-left: -10px; cursor: pointer; }
+  .table .th-type:hover { color: LightGray; }
+  /* td */
+  .table td { padding: 2px; font-size: 12px; }
+  .table .td-center { text-align: center; }
+  .table .td-left { text-align: left; }
+  /* */
+  .summary { font-weight: bold; font-size: 11px; }
+  .alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
+  .alert-severe-error { background-color: red; color: white; }
+  .tooltip.in { opacity: 1; }
+  .new { color: #468847; font-weight: bold; }
+  .toggle { text-align: center !important; }
+  .toggle:hover { background-color: Gainsboro !important; cursor: pointer; }
+  .icon-pencil { margin: 0; padding: 0; }
+  .table tbody+tbody { border-top: 0 }
+  .point { cursor: pointer; }
+  .success-hover:hover { background-color: #468847; }
+  .warning-hover:hover { background-color: #f89406; }
+  .info-hover:hover { background-color: #3a87ad; }
+  .important-hover:hover { background-color: #b94a48; }
+  .icon-chevron-up:hover, .icon-chevron-down:hover { background-color: Gainsboro }
+
+/* teachers */
+
+/* jobs */
+
+/* applications */
 
 /* dev */
 .wip { background-color: yellow; }

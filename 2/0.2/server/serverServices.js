@@ -3,16 +3,16 @@
 //In theory it acts as the server in the absence of the server. It is a mock server.
 // *** ********* ***
 
-app.factory('delayResponseInterceptor', function($q, $timeout) {
+app.factory('delayResponseInterceptor', function($q, $timeout, $rootScope) {
   //Can be used to delay all mock responses by a typical (and occasionally atypical) random amount, or fail entirely at a certain rate
-  var serverSpeedMultiplier = 0.3; //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
+  var serverSpeedMultiplier = _.firstDefined($rootScope.serverSpeedMultiplierOverride, $rootScope.config.requests.serverSpeedMultiplier, 0.3); //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
   var logPostData = true;
   var config = { //configure special values for particular requests here
     //delayLengthMultiplier: standard random server response delay will be multiplied by this (e.g. for requests which are normally longer, say)
     //errorRate: 0: no errors; 1 error every time;
     attributeDefaults: { delayLengthMultiplier: 1, errorRate: 0 }, //these will be used if no specific value is found
-    '/admin/service/candidates-to-process': { delayLengthMultiplier: 2 }, //will takes twice as long (on average)
-    '/admin/service/process-candidate': { delayLengthMultiplier: 4, errorRate: 0.05 },
+    '/admin/service/teachers': { delayLengthMultiplier: 2 }, //will takes twice as long (on average)
+    '/admin/service/process-teacher': { delayLengthMultiplier: 4, errorRate: 0.05 },
     '/admin/service/process-application': { delayLengthMultiplier: 4, errorRate: 0.05 }
   };
   var getConfigValue = function(requestUrl, attributeName, defaultValue) { //use to ease the process of getting config values
@@ -51,7 +51,8 @@ app.factory('delayResponseInterceptor', function($q, $timeout) {
     //note that we need to resolve the httpRequest twice - once to get the url (to get related config values), and then again after the delay
     var responseInfo;
     var getResponseInfo = function(response) {
-      if (logPostData && response.config.data) console.log(response.config.data);
+      if (logPostData && response.config.method === 'POST') console.log('SERVER REQUEST: ', response.config.url, 'PARAMS: ', response.config.data);
+      //if (logPostData && response.config.data) console.log(response.config.data);
       responseInfo = response;
       return httpRequest; //use the same promise
     };
@@ -83,7 +84,7 @@ app.factory('randomDataService', function() {
   var roles = ['Classroom teacher','Early Years / Kindergarten Teacher','Head of Department','Primary / Elementary Teacher','Head of School','Counsellor','Curriculum Coordinator','Deputy Head / Vice Principal','Director of Studies','Educational Psychologist','English as a Foreign Language Teacher','Head of Primary / Elementary','Head of Secondary','Head of Section','Head of Year (pastoral)','IB PYP Coordinator','IB MYP Coordinator','IB DP Coordinator','Librarian','Other Position','Special Needs Teacher','Subject Leader','Teaching Assistant'];
   var positions = roles;
   var countries = ['United States','United Kingdom','Afghanistan','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, The Democratic Republic of The','Cook Islands','Costa Rica','Cote Divoire','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guinea','Guinea-bissau','Guyana','Haiti','Heard Island and Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, The Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestinian Territory, Occupied','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saint Helena','Saint Kitts and Nevis','Saint Lucia','Saint Pierre and Miquelon','Saint Vincent and The Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and The South Sandwich Islands','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan, Province of China','Tajikistan','Tanzania, United Republic of','Thailand','Timor-leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Western Sahara','Yemen','Zambia','Zimbabwe'];
-  var schoolSuffixes = _(forenames).filter(function() { return Math.random()<0.05; });
+  var schoolSuffixes = _(forenames).filter(function() { return Math.random()<0.05; }).value();
   var twitterUsernames = ['kirkouimet','damenleeturks','calebogden','aaronbushnell','rogie','jacobseethaler','daryl','kolage','VinThomas','ShaunMoynihan','zulsdesign','nckjrvs','timothycd','motherfuton','jayrobinson','cameronmoll','jayman','danielhaim','alagoon','andrewpautler','garrettgee','blakesimkins','gilbertglee','ogvidius','manspaugh','ripplemdk','paul_irish','Anotherdagou','ryanleroux','roybarberuk','_joshnh','todd_coleman','russellsmith21','designer_dean','PtiteNoli','walterstephanie','imfine_thankyou','utroda','NastyaVZ','tiagocamargo','mikebeecham','nimaa','sajtoo','AngelZxxWingZ','ariona_rian','OskarLevinson','feliperibeiros','jonsuh','leevigraham','ryanAmurphy','jsngr','axelbouaziz','kristijantaken','decarola','iamlouisbullock','dbox','molovo','Djeje','antoniopratas','matejsudar','mkalalang','WhatTheFerguson','SiskaFlaurensia','deimler','benhowdle','mds','itolmach','MarkusOkur','ckor','Alvaro_Nistal','bradenhamm','gabediaz','ThisIsJohnBrown','benpeck','pizzulata','haibnu','JuliaYunLiu','vctrfrnndz','daniel_love','redkeg','benefritz','jpadilla_','owlfurty','eldelentes','mambows','max9xs','waqar_alamgir','sjoerd_dijkstra','CrafterSama','calvintennant','smharley','sodevious','razvantugui','FreelanceNathan','renbyrd','adn','jjmpsp','Fitehal','meghanglass','acoops_','cibawoman','iamlouisbullock','desaiguddu','brianmaloney','HugoAlbonete','macvhustle','rizwaniqbal','fabioChannel','vehbikilic','kkbethi','poopsplat','wrightmartin','JeffChausse','faridelnasire','devstrong','odaymashalla','Rafa3mil','meddeg','brampitoyo','arjunchetna','toodlenoodle','iamjamie','jcarlosweb','temonehm','gerwitz','neweravin','hvillega','mozato','alek_djuric','mcmieras','zametniy','jwphillips','Fubaruba','luhman','Betraydan','dvidsilva'];
   var applicationStatuses = ['applied', 'putForward', 'shortlisted', 'interviewed', 'offersMade', 'accepted', 'rejected'];
   var latinWords = ["ab", "aberant", "abscidit", "acervo", "ad", "addidit", "adhuc", "adsiduis", "adspirate", "aequalis", "aer", "aera", "aere", "aeris", "aestu", "aetas", "aethera", "aethere", "agitabilis", "aliis", "aliud", "alta", "altae", "alto", "ambitae", "amphitrite", "animal", "animalia", "animalibus", "animus", "ante", "aquae", "arce", "ardentior", "astra", "aurea", "auroram", "austro", "bene", "boreas", "bracchia", "caeca", "caecoque", "caeleste", "caeli", "caelo", "caelum", "caelumque", "caesa", "calidis", "caligine", "campoque", "campos", "capacius", "carentem", "carmen", "cepit", "certis", "cesserunt", "cetera", "chaos:", "cingebant", "cinxit", "circumdare", "circumfluus", "circumfuso", "coegit", "coeperunt", "coeptis", "coercuit", "cognati", "colebat", "concordi", "congeriem", "congestaque", "consistere", "contraria", "conversa", "convexi", "cornua", "corpora", "corpore", "crescendo", "cum", "cuncta", "cura", "declivia", "dedit", "deducite", "deerat", "dei", "densior", "deorum", "derecti", "descenderat", "deus", "dextra", "di", "dicere", "diffundi", "diremit", "discordia", "dispositam", "dissaepserat", "dissociata", "distinxit", "diu", "diversa", "diverso", "divino", "dixere", "dominari", "duae", "duas", "duris", "effervescere", "effigiem", "egens", "elementaque", "emicuit", "ensis", "eodem", "erant", "erat", "erat:", "erectos", "est", "et", "eurus", "evolvit", "exemit", "extendi", "fabricator", "facientes", "faecis", "fecit", "feras", "fert", "fidem", "figuras", "finxit", "fixo", "flamina", "flamma", "flexi", "fluminaque", "fontes", "foret", "forma", "formaeque", "formas", "fossae", "fratrum", "freta", "frigida", "frigore", "fronde", "fuerant", "fuerat", "fuit", "fulgura", "fulminibus", "galeae", "gentes", "glomeravit", "grandia", "gravitate", "habendum", "habentem", "habentia", "habitabilis", "habitandae", "haec", "hanc", "his", "homini", "hominum", "homo", "horrifer", "humanas", "hunc", "iapeto", "ignea", "igni", "ignotas", "illas", "ille", "illi", "illic", "illis", "imagine", "in", "inclusum", "indigestaque", "induit", "iners", "inmensa", "inminet", "innabilis", "inposuit", "instabilis", "inter", "invasit", "ipsa", "ita", "iudicis", "iuga", "iunctarum", "iussit", "lacusque", "lanient", "lapidosos", "lege", "legebantur", "levitate", "levius", "liberioris", "librata", "ligavit:", "limitibus", "liquidas", "liquidum", "litem", "litora", "locavit", "locis", "locoque", "locum", "longo", "lucis", "lumina", "madescit", "magni", "manebat", "mare", "margine", "matutinis", "mea", "media", "meis", "melior", "melioris", "membra", "mentes", "mentisque", "metusque", "militis", "minantia", "mixta", "mixtam", "moderantum", "modo", "moles", "mollia", "montes", "montibus", "mortales", "motura", "mundi", "mundo", "mundum", "mutastis", "mutatas", "nabataeaque", "nam", "natura", "naturae", "natus", "ne", "nebulas", "nec", "neu", "nisi", "nitidis", "nix", "non", "nondum", "norant", "nova", "nubes", "nubibus", "nullaque", "nulli", "nullo", "nullus", "numero", "nunc", "nuper", "obliquis", "obsistitur", "obstabatque", "occiduo", "omni", "omnia", "onerosior", "onus", "opifex", "oppida", "ora", "orba", "orbe", "orbem", "orbis", "origine", "origo", "os", "otia", "pace", "parte", "partim", "passim", "pendebat", "peragebant", "peregrinum", "permisit", "perpetuum", "persidaque", "perveniunt", "phoebe", "pinus", "piscibus", "plagae", "pluvialibus", "pluviaque", "poena", "pondere", "ponderibus", "pondus", "pontus", "porrexerat", "possedit", "posset:", "postquam", "praebebat", "praecipites", "praeter", "premuntur", "pressa", "prima", "primaque", "principio", "pro", "pronaque", "proxima", "proximus", "pugnabant", "pulsant", "quae", "quam", "quanto", "quarum", "quem", "qui", "quia", "quicquam", "quin", "quinta", "quisque", "quisquis", "quod", "quoque", "radiis", "rapidisque", "recens", "recepta", "recessit", "rectumque", "regat", "regio", "regna", "reparabat", "rerum", "retinebat", "ripis", "rudis", "sanctius", "sata", "satus", "scythiam", "secant", "secrevit", "sectamque", "secuit", "securae", "sed", "seductaque", "semina", "semine", "septemque", "sibi", "sic", "siccis", "sidera", "silvas", "sine", "sinistra", "sive", "sole", "solidumque", "solum", "sorbentur", "speciem", "spectent", "spisso", "sponte", "stagna", "sua", "subdita", "sublime", "subsidere", "sui", "suis", "summaque", "sunt", "super", "supplex", "surgere", "tanta", "tanto", "tegi", "tegit", "tellure", "tellus", "temperiemque", "tempora", "tenent", "tepescunt", "terra", "terrae", "terram", "terrarum", "terras", "terrenae", "terris", "timebat", "titan", "tollere", "tonitrua", "totidem", "totidemque", "toto", "tractu", "traxit", "triones", "tuba", "tum", "tumescere", "turba", "tuti", "ubi", "ulla", "ultima", "umentia", "umor", "unda", "undae", "undas", "undis", "uno", "unus", "usu", "ut", "utque", "utramque", "valles", "ventis", "ventos", "verba", "vesper", "videre", "vindice", "vis", "viseret", "vix", "volucres", "vos", "vultus", "zephyro", "zonae"];
@@ -117,7 +118,7 @@ app.factory('randomDataService', function() {
       case 'subject': return getRandomArrayItem(subjects);
       case 'role': return getRandomArrayItem(roles);
       case 'position': return getRandomArrayItem(positions);
-      case 'school': return getRandomArrayItem(['School', 'Ecole']) + ' ' + getRandomArrayItem(['of', 'de', 'de la']) + ' ' + getRandomArrayItem(schoolSuffixes);
+      case 'schoolName': return getRandomArrayItem(['School', 'Ecole']) + ' ' + getRandomArrayItem(['of', 'de', 'de la']) + ' ' + getRandomArrayItem(schoolSuffixes);
       case 'country': return getRandomArrayItem(countries);
       //jobs
       case 'numApplied': return getRandomInteger(0, 40);
@@ -125,7 +126,7 @@ app.factory('randomDataService', function() {
       case 'numShortlisted': return getRandomInteger(0, 20);
       case 'numInterviewed': return getRandomInteger(0, 20);
       case 'numOffersMade': return getRandomInteger(0, 20); //note 'Offers' not 'Offer'
-      case 'numAccepted': return Math.random() < 0.2;
+      case 'isAccepted': return Math.random() < 0.2;
       case 'numRejected': return getRandomInteger(0, 20);
       case 'dateApplied': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
       case 'datePutForward': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
@@ -177,7 +178,7 @@ app.factory('randomDataService', function() {
       "id": _.uniqueId(),
       "score": getRandomDataItem('score'),
       "teacher": getRandomObject(['id', 'fullname', 'profileUrl', 'score']),
-      "job": getRandomObject(['id', 'subject', 'position', 'school', 'country']),
+      "job": getRandomObject(['id', 'subject', 'position', 'schoolName', 'country']),
       "dateApplied": getRandomIsoDate(new Date('2013-05-01'), new Date())
     };
   };
@@ -213,41 +214,76 @@ app.run(function($httpBackend, $resource, $q, $timeout, randomDataService) {
   //note: $httpBackend requests are at the bottom
 
   //dummy responses (in the form of javascript objects)
-  var positions = { "positions": [] };
-  var candidatesToProcess = {
-    "users": randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullname', 'profileUrl'], length: randomDataService.getRandomInteger(0, 100) })
+
+  //teachers
+  var teachersResponse = function(method, url, data, headers) {
+    var teachers;
+    var params = (data ? JSON.parse(data) : {});
+    if (params.isApproved === false && params.isDeclined === false) {
+      teachers = randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullname', 'profileUrl'], length: randomDataService.getRandomInteger(0, 100) });
+    }
+    var json = { "teachers": teachers };
+    return [200, json];
   };
 
+  //applications
   var applicationsResponse = function(method, url, data, headers) {
     var applications;
-    var params = (data ? JSON.parse(data) : undefined);
-    if (!data) { applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplication, length: randomDataService.getRandomInteger(0, 100) }); }
-    else if (params.jobId) { applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplicationForSpecificJob, length: randomDataService.getRandomInteger(0, 60) }); }
+    var params = (data ? JSON.parse(data) : {});
+    if (params.isPutForward === false && params.isDeclined === false) {
+      applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplication, length: randomDataService.getRandomInteger(0, 100) });
+    }
+    if (params.jobId) {
+      applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplicationForSpecificJob, length: randomDataService.getRandomInteger(0, 60) });
+    }
     var json = { "applications": applications };
     return [200, json];
   };
 
-  var jobProperties = ['id', 'subject', 'position', 'numApplied', 'numPutForward', 'numShortlisted', 'numInterviewed', 'numOffersMade', 'numAccepted', 'numRejected'];
-  var jobsResponse = function() {
+  //jobs
+  var jobProperties = ['id', 'subject', 'position', 'schoolName', 'country', 'numApplied', 'numPutForward', 'numShortlisted', 'numInterviewed', 'numOffersMade', 'isAccepted', 'numRejected'];
+  var jobsResponse = function(method, url, data, headers) {
+    var params = (data ? JSON.parse(data) : {});
+    var properties = _.difference(jobProperties, _.keys(params)); //remove properties which were passed as params
+    var paramCount = _.keys(params).length;
+    var length;
+    if (paramCount === 0) length = 200; //max
+    if (paramCount === 1) length = randomDataService.getRandomInteger(10, 50);
+    if (paramCount > 1) length = randomDataService.getRandomInteger(0, 10);
     var jobs = {
-      "jobs": randomDataService.getRandomArrayOfObjects({ properties: jobProperties, length: randomDataService.getRandomInteger(0, 30) })
+      "jobs": randomDataService.getRandomArrayOfObjects({ properties: properties, length: length })
     };
     return [200, jobs];
   };
 
-  var duplicateSchools = randomDataService.getRandomArrayOfDataItems({ type: 'school', length: randomDataService.getRandomInteger(200, 1000) });
-  var schools = {
-    "schools": _.chain(duplicateSchools).uniq().objectifyAll('name').addUniqueIds().value()
-  };
+  //shared
+  var duplicateSchoolNames = randomDataService.getRandomArrayOfDataItems({ type: 'schoolName', length: randomDataService.getRandomInteger(200, 1000) });
+  var schoolNames = { "schoolNames": _(duplicateSchoolNames).uniq().objectifyAll('name').value() };
+
+  var countriesRaw = ['United States','United Kingdom','Afghanistan','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, The Democratic Republic of The','Cook Islands','Costa Rica','Cote Divoire','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guinea','Guinea-bissau','Guyana','Haiti','Heard Island and Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, The Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestinian Territory, Occupied','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saint Helena','Saint Kitts and Nevis','Saint Lucia','Saint Pierre and Miquelon','Saint Vincent and The Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and The South Sandwich Islands','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan, Province of China','Tajikistan','Tanzania, United Republic of','Thailand','Timor-leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Western Sahara','Yemen','Zambia','Zimbabwe'];
+  var countries = { "countries": _.map(countriesRaw, function(name) { return { name: name }; }) };
+
+  var subjectsRaw = ['Archaeology','Arabic','Architecture','Art and Design','Biology','Business Studies','Careers','Chemistry','Computing','Curriculum Manager','Design & Technology','Drama','Early Years/ Kindergarten','Economics','English','English as a Foreign Language','Environmental Systems and Societies (ESS)','Food Technology','Foreign Languages','French','Geography','German','History','Humanities','Information Technology','Italian','Law','Mathematics','Mandarin','Media Studies','Middle School Generalist','Music','Librarian','Not Applicable','Pastoral Manager','Physical Education','Physics','Politics','Portuguese','Primary / Elementary','Psychology','Religious Education','Science','Senior Manager','Social Sciences','Spanish','Special Education Needs (SEN)','Supply Teacher','Teaching Assistant','TOK'];
+  var subjects = { "subjects": _.map(subjectsRaw, function(name) { return { name: name }; }) };
+
+  var positionsRaw = ['Classroom teacher','Early Years / Kindergarten Teacher','Head of Department','Primary / Elementary Teacher','Head of School','Counsellor','Curriculum Coordinator','Deputy Head / Vice Principal','Director of Studies','Educational Psychologist','English as a Foreign Language Teacher','Head of Primary / Elementary','Head of Secondary','Head of Section','Head of Year (pastoral)','IB PYP Coordinator','IB MYP Coordinator','IB DP Coordinator','Librarian','Other Position','Special Needs Teacher','Subject Leader','Teaching Assistant'];
+  var positions = { "positions": _.map(positionsRaw, function(name) { return { name: name }; }) };
 
   //$httpBackend requests
   //Note: url rule - all lower case, words separated with a hyphen
-  $httpBackend.whenGET(/\/.*.html/).passThrough();
-  $httpBackend.whenPOST('positions').respond(200, positions);
-  $httpBackend.whenPOST('/admin/service/process-candidate').respond(200, 'processed');
-  $httpBackend.whenPOST('/admin/service/candidates-to-process').respond(200, candidatesToProcess);
-  $httpBackend.whenPOST('/admin/service/process-application').respond(200, 'processed');
-  $httpBackend.whenPOST('/admin/service/applications').respond(applicationsResponse); //can return different things, depending on options
-  $httpBackend.whenPOST('/admin/service/jobs').respond(jobsResponse); //returns something different each time
-  $httpBackend.whenPOST('/admin/service/schools').respond(200, schools);
+    $httpBackend.whenGET(/.html/).passThrough();
+    //teachers
+    $httpBackend.whenPOST('/admin/service/teachers').respond(teachersResponse);
+    $httpBackend.whenPOST('/admin/service/process-teacher').respond(200, 'processed');
+    //jobs
+    $httpBackend.whenPOST('/admin/service/jobs').respond(jobsResponse); //returns something different each time
+    $httpBackend.whenPOST('/admin/service/job').respond(200); //placeholder
+    //applications
+    $httpBackend.whenPOST('/admin/service/applications').respond(applicationsResponse); //can return different things, depending on options
+    $httpBackend.whenPOST('/admin/service/process-application').respond(200, 'processed');
+    //shared
+    $httpBackend.whenPOST('/admin/service/schoolNames').respond(200, schoolNames);
+    $httpBackend.whenPOST('/admin/service/countries').respond(200, countries);
+    $httpBackend.whenPOST('/admin/service/subjects').respond(200, subjects);
+    $httpBackend.whenPOST('/admin/service/positions').respond(200, positions);
 });

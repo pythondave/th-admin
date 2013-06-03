@@ -1,0 +1,22 @@
+<div class="modal fade ng-scope in">
+  <div class="modal-header">
+    <img ng-src="{{application.teacher.avatarUrl}}" style="width: 32px; padding-right:8px; float: left;" />
+    <h3>{{application.teacher.fullname}} - {{field.title}}</h3>
+  </div>
+  <div class="modal-body">
+    <div>
+      <span>Send message: </span>
+      <input ng-init="sendMessage=true" type="checkbox" ng-model="sendMessage" style="margin-top: -3px"></input>
+    </div>
+    <div ng-show="sendMessage">
+      <h5>Message</h5>
+      <textarea ng-model="message" style="width: 515px; height: 200px;"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button ng-click="close()" class="btn btn-primary">Cancel</button>
+    <button ng-click="close(result)" class="btn btn-primary">
+      Tick field<span ng-show="sendMessage"> and send message</span>
+    </button>
+  </div>
+</div>

@@ -1,26 +1,30 @@
-<button class="btn btn-primary">Jobs</button>
+<button class="btn btn-primary">Vacancies</button>
 <div class="search">
   <div class="input-append">
     <input type="text" class="input-small" placeholder="Search" ng-model="search"></input>
     <span class="add-on"><i class="icon-search"></i></span>
-    <i class="icon-remove" ng-hide="!search" ng-click="search=null"></i>
+    <i class="icon-remove" ng-hide="!search" ng-click="search=undefined"></i>
   </div>
 </div>
 <div class="filter">
   <span>School</span>
-  <select ng-model="school" ng-options="s.name for s in schools"></select>
+  <select ng-model="schoolName" ng-options="x.name group by x.type for x in schoolNames"></select>
+  <i class="icon-remove" ng-hide="!schoolName" ng-click="schoolName=undefined"></i>
+</div>
+<div class="filter">
+  <span>Country</span>
+  <select ng-model="country" ng-options="x.name group by x.type for x in countries"></select>
+  <i class="icon-remove" ng-hide="!country" ng-click="country=undefined"></i>
 </div>
 <div class="filter">
   <span>Subject</span>
-  <select ng-model="subject" ng-options="s.name as s.val for s in subjects">
-    <option></option>
+  <select ng-model="subject" ng-options="x.name group by x.type for x in subjects">
   </select>
-  <i class="icon-remove" ng-hide="!subject" ng-click="subject=null"></i>
+  <i class="icon-remove" ng-hide="!subject" ng-click="subject=undefined"></i>
 </div>
 <div class="filter">
   <span>Position</span>
-  <select ng-model="position" ng-options="p.name as p.val for p in positions">
-    <option></option>
+  <select ng-model="position" ng-options="x.name group by x.type for x in positions">
   </select>
-  <i class="icon-remove" ng-hide="!position" ng-click="position=null"></i>
+  <i class="icon-remove" ng-hide="!position" ng-click="position=undefined"></i>
 </div>

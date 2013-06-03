@@ -1,58 +1,64 @@
 <!DOCTYPE html>
 <html ng-app="app">
   
-  <head>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
-  </head>
-  
-  <body ng-controller="KeyboardEventCtrl" keyboard-event>
-    <div ng-controller="NavBarCtrl" ng-include="navBarUrl" class="ng-cloak"></div>
-    <div class="container-fluid">
-      <div class="row-fluid">
-        <div ui-view="left" class="ng-cloak left span3"></div>
-        <div ui-view="main" class="ng-cloak span9"></div>
-      </div>
-    </div>
-    
-    <!--external scripts-->
-      <!--jquery-->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-      <!--underscore-->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
-      <!--twitter bootstrap-->
-        <!--<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script> avg issue => replaced with line below-->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-      <!--angular (official)-->
-        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-        <script src="//cdn.jsdelivr.net/angularjs/1.1.2/angular-resource.min.js"></script>
-      <!--angular (community)-->
-        <!--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.2.0/ui-bootstrap-tpls.js"></script> replaced with line below-->
-        <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.js"></script>
-        <!--<script src="http://angular-ui.github.io/ui-router/build/angular-ui-states.min.js"></script> stopped working => replaced with line below-->
-        <script src="//angular-ui.github.io/ui-router/build/angular-ui-router.min.js"></script>
- 
-    <!--local scripts-->
-      <!--main-->
-        <script src="app.js"></script>
-      <!--services-->
-        <script src="shared/services/listService.js"></script>
-        <script src="shared/services/positionServices.js"></script>
-        <script src="shared/services/schoolServices.js"></script>
-        <script src="teachers/teacherServices.js"></script>
-        <script src="jobs/jobServices.js"></script>
-        <script src="applications/applicationServices.js"></script>
-      <!--controllers-->
-        <script src="teachers/teacherControllers.js"></script>
-        <script src="applications/applicationControllers.js"></script>
-        <script src="jobs/jobControllers.js"></script>
-      <!--directives-->
-        <script src="shared/directives.js"></script>
+<head>
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css">
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
 
-    <!--prototype only scripts-->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-mocks.js"></script>
-    <script src="shared/services/serverServices.js"></script>
-  </body>
+<body ng-controller="KeyboardEventCtrl" keyboard-event>
+  <div ng-controller="NavBarCtrl" ng-include="navBarUrl" class="ng-cloak"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div ui-view="left" class="ng-cloak left span4"></div>
+      <div ui-view="main" class="ng-cloak span8"></div>
+    </div>
+  </div>
+  
+  <!--external scripts-->
+    <!--jquery-->
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <!--lodash (rather than underscore)-->
+      <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.2.1/lodash.min.js"></script>      
+    <!--underscore
+      <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+    -->
+    <!--twitter bootstrap-->
+      <!--<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script> avg issue => replaced with line below-->
+      <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <!--angular (official)-->
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+      <script src="//cdn.jsdelivr.net/angularjs/1.1.2/angular-resource.min.js"></script>
+    <!--angular (community)-->
+      <!--<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.2.0/ui-bootstrap-tpls.js"></script> replaced with line below-->
+      <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.3.0.js"></script>
+      <!--<script src="http://angular-ui.github.io/ui-router/build/angular-ui-states.min.js"></script> stopped working => replaced with line below-->
+      <script src="//angular-ui.github.io/ui-router/build/angular-ui-router.min.js"></script>
+
+  <!--local scripts-->
+    <!--main-->
+      <script src="app.js"></script>
+      <script src="server/config.js"></script>
+    <!--services-->
+      <script src="shared/services/listService.js"></script>
+      <script src="shared/services/schoolServices.js"></script>
+      <script src="shared/services/countryServices.js"></script>
+      <script src="shared/services/subjectServices.js"></script>
+      <script src="shared/services/positionServices.js"></script>
+      <script src="teachers/teacherServices.js"></script>
+      <script src="jobs/jobServices.js"></script>
+      <script src="applications/applicationServices.js"></script>
+    <!--controllers-->
+      <script src="teachers/teacherControllers.js"></script>
+      <script src="applications/applicationControllers.js"></script>
+      <script src="jobs/jobControllers.js"></script>
+    <!--directives-->
+      <script src="shared/directives.js"></script>
+
+  <!--prototype only scripts-->
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular-mocks.js"></script>
+  <script src="server/serverServices.js"></script>
+</body>
 
 </html>

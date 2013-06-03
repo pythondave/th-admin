@@ -1,9 +1,6 @@
 var app = angular.module('app', ['ui.bootstrap', 'ngMockE2E', 'ngResource', 'ui.compat']);
 
 app.run(function($rootScope) {
-  //global data
-  $rootScope.postConfig = { "headers": { "Content-Type": "application/x-www-form-urlencoded" } };
-
   //create some new generic underscore methods
   _.mixin({ //ref: http://underscorejs.org/#mixin
     compare: function(a, b) { //compares a and b and returns 1 (a first), -1 (b first) or 0 (equal)
@@ -39,14 +36,22 @@ app.run(function($rootScope) {
       if (typeof x === 'object') { return x; } else { var o = {}; o[newPropertyName] = x; return o; }
     },
     objectifyAll: function(arr, newPropertyName) { //'objectifies' all items of an array
-      return _.map(arr, function(item) { return _(item).objectify(newPropertyName); });
+      return _.map(arr, function(item) { return _(item).objectify(newPropertyName).value(); });
     },
     addUniqueId: function(o) { //adds a uniqueId to o
       o.id = _.uniqueId();
       return o;
     },
     addUniqueIds: function(arr, newPropertyName) {
-      return _.map(arr, function(item) { return _(item).addUniqueId(newPropertyName); });
+      return _.map(arr, function(item) { return _(item).addUniqueId(newPropertyName).value(); });
+    },
+    firstDefined: function() { return _.find(arguments, function(x) { return !_.isUndefined(x); }); },
+    eachRight: function(arr, callback) {
+      for (var i = arr.length-1; i >= 0; i--) { callback(arr[i], i, arr); }
+      return arr;
+    },
+    rejectInPlace: function(arr, callback) {
+      return _.eachRight(arr, function(item, index) { if (callback(item)) arr.splice(index, 1); });
     }
   });
 });
@@ -84,8 +89,8 @@ app.config(function($stateProvider) {
     .state('job', {
       url: '/jobs/:jobId',
       views: {
-        'left': { templateUrl: 'jobs/jobMenu.html', controller: 'JobMenuCtrl' },
-        'main': { templateUrl: 'jobs/job.html', controller: 'JobCtrl' }
+        'left': { templateUrl: 'jobs/job/menu.html', controller: 'JobMenuCtrl' },
+        'main': { templateUrl: 'jobs/job/default.html', controller: 'JobCtrl' }
       }
     })
     .state('applications', {

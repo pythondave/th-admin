@@ -8,14 +8,14 @@ app.factory('listService', function($timeout) {
     //list constructor function
     //a list is like an array with methods - the array is list.data
     //we can use this rather than changing the Array prototype
-    //*** TODO: make more use of underscore
+    //*** TODO: make more use of lodash
     arr = arr || [];
     var o = {};
     o.type = type;
 
     //basic functions
     o.getRandomIndex = function() { return _.random(0, o.data.length); };
-    o.each = function(f) { return _(o.data).each(f); };
+    o.each = function(f) { return _(o.data).each(f).value(); };
 
     //adding properties
     o.addProperty = function(property, values) {
@@ -38,7 +38,7 @@ app.factory('listService', function($timeout) {
       return o.activateByIndex(o.getRandomIndex());
     };
     o.getActive = function() {
-      _(o.data).find(function(item) { return item.active; });
+      _(o.data).find(function(item) { return item.active; }).value();
     };
     o.val = function() { //syntactic sugar for getActive().val
       return o.getActive().val;
@@ -115,19 +115,19 @@ app.factory('listService', function($timeout) {
     //grouping / summarising
     var summarise = function(arr, path) { //generic - consider moving
       //returns a new array of objects which summarise the data at 'path' in arr
-      return _.chain(arr)
-        .groupBy(function(item){ return _(item).deep(path); })
-        .map(function(value, key) { return { name: key, count: value.length, val: key + ' (' + value.length + ')' }; })
+      return _(arr)
+        .groupBy(function(item){ return _(item).deep(path).value(); })
+        .map(function(value, key) { return { val: key, count: value.length, name: key + ' (' + value.length + ')' }; })
         .sortBy(function(o) { return o.val; })
         .value();
     };
     var sum = function(arr, path) { //generic - consider moving
       //returns the sum of values at 'path' in arr
-      return _.reduce(arr, function(tally, item) { return tally + _(item).deep(path); }, 0);
+      return _.reduce(arr, function(tally, item) { return tally + _(item).deep(path).value(); }, 0);
     };
     var count = function(arr, path) { //generic - consider moving
       //returns the count of values at 'path' in arr
-      return _.reduce(arr, function(tally, item) { return tally + (_(item).deep(path) ? 1 : 0); }, 0);
+      return _.reduce(arr, function(tally, item) { return tally + (_(item).deep(path).value() ? 1 : 0); }, 0);
     };
     o.summarise = function(path) {
       return summarise(o.data, path);

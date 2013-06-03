@@ -1,15 +1,15 @@
-app.controller('TeachersMenuCtrl', function($scope, positionsService) {
+app.controller('TeachersMenuCtrl', function($scope) {
 });
 
-app.controller('TeachersCtrl', function($scope, listService, candidatesService) {
-  candidatesService.getAndSetData.then(function() {
-    $scope.candidates = candidatesService.list.data;
+app.controller('TeachersCtrl', function($scope, listService, teachersService) {
+  teachersService.getAndSetData.then(function() {
+    $scope.candidates = teachersService.list.data;
   });
   $scope.alerts = new listService.List(null);
 
   $scope.process = function(index, status) {
-    var candidate = candidatesService.list.data[index];
-    var processByIndex = candidatesService.processByIndex(index, status); //promise
+    var candidate = teachersService.list.data[index];
+    var processByIndex = teachersService.processByIndex(index, status); //promise
     var alert = {};
 
     var setProcessedMessage = function() { //promise success

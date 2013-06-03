@@ -1,13 +1,14 @@
-app.factory('schoolsService', function($http, $rootScope, listService) {
+app.factory('schoolNamesService', function($http, $rootScope, listService) {
   var o = {};
   o.list = new listService.List();
 
   //get data
   o.getAndSetData = function() {
     o.list.setSortOrderPaths(['name']);
-    var getDataFromServer = $http.post('/admin/service/schools', null, $rootScope.postConfig);
+    var getDataFromServer = $http.post($rootScope.config.requests.urls.schoolNames, null, $rootScope.config.postConfig);
     var setData = function(response) {
-      o.list.setData(response.data.schools);
+      o.list.setData(response.data.schoolNames);
+      o.isSet = true;
     };
     return getDataFromServer.then(setData);
   };

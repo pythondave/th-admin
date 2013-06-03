@@ -4,6 +4,7 @@
   <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
 </div>
 
+<!--<h5>Candidates</h5>-->
 <div ng-show="applications.length==0">
   <p>No applications found</p>
 </div>
@@ -12,26 +13,26 @@
 <table ng-show="applications.length>0" class="table table-nowrap">
   <thead>
     <tr>
-      <th>
+      <th class="th-left">
         <span class="sort" ng-click="sort('teacher.fullname')">Candidate</span>
       </th>
       <th></th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-score')">Score</span>
       </th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-dateShortlisted')">Shortlisted</span>
       </th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-dateInterviewed')">Interviewed</span>
       </th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-dateOfferMade')">Offer made</span>
       </th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-dateAccepted')">Accepted</span>
       </th>
-      <th>
+      <th class="th-center">
         <span class="sort" ng-click="sort('-dateRejected')">Rejected</span>
       </th>
     </tr>
@@ -56,30 +57,30 @@
           </span>
         </span>
       </td>
-      <td>
+      <td class="td-center">
         <span class="badge" ng-class="a.badgeClass">{{a.score}}</span>
       </td>
-      <td class="toggle" ng-click="toggle(a, 'dateShortlisted')">
+      <td class="td-center toggle" ng-click="toggleField(a, 'shortlisted')">
         <span simple-tooltip="{{a.dateShortlisted | date:'EEE dd MMM yyyy h:mma'}}">
           <i class="icon-ok" ng-show="a.dateShortlisted"></i>
         </span>
       </td>
-      <td class="toggle" ng-click="toggle(a, 'dateInterviewed')">
+      <td class="td-center toggle" ng-click="toggleField(a, 'interviewed')">
         <span simple-tooltip="{{a.dateInterviewed | date:'EEE dd MMM yyyy h:mma'}}">
           <i class="icon-ok" ng-show="a.dateInterviewed"></i>
         </span>
       </td>
-      <td class="toggle" ng-click="toggle(a, 'dateOfferMade')">
+      <td class="td-center toggle" ng-click="toggleField(a, 'offerMade')">
         <span simple-tooltip="{{a.dateOfferMade | date:'EEE dd MMM yyyy h:mma'}}">
           <i class="icon-ok" ng-show="a.dateOfferMade"></i>
         </span>
       </td>
-      <td class="toggle" ng-click="toggle(a, 'dateAccepted')">
+      <td class="td-center toggle" ng-click="toggleField(a, 'accepted')">
         <span simple-tooltip="{{a.dateAccepted | date:'EEE dd MMM yyyy h:mma'}}">
           <i class="icon-ok" ng-show="a.dateAccepted"></i>
         </span>
       </td>
-      <td class="toggle" ng-click="toggle(a, 'dateRejected')">
+      <td class="td-center toggle" ng-click="toggleField(a, 'rejected')">
         <span simple-tooltip="{{a.dateRejected | date:'EEE dd MMM yyyy h:mma'}}">
           <i class="icon-ok" ng-show="a.dateRejected"></i>
         </span>
@@ -101,14 +102,14 @@
   </tbody>
   <tfoot>
     <tr>
-      <th>Totals</th>
+      <th class="th-left">Totals</th>
       <th></th>
       <th></th>
-      <th>{{totals.numShortlisted}}</th>
-      <th>{{totals.numInterviewed}}</th>
-      <th>{{totals.numOffersMade}}</th>
-      <th>{{totals.numAccepted}}</th>
-      <th>{{totals.numRejected}}</th>
+      <th class="th-center">{{totals.numShortlisted}}</th>
+      <th class="th-center">{{totals.numInterviewed}}</th>
+      <th class="th-center">{{totals.numOffersMade}}</th>
+      <th class="th-center">{{totals.isAccepted}}</th>
+      <th class="th-center">{{totals.numRejected}}</th>
     </tr>
   </tfoot>
 </table>
