@@ -1,0 +1,60 @@
+<div ng-controller="mainController">
+  <h3>Server API Viewer</h3>
+  <h5>Request</h5>
+  <div class="field">
+    <span class="field-label">Request URL (<span>{{requests.length}}</span>): </span>
+    <select class="field-value" ng-change="query=request.queries[0]; processRequest(request); " ng-model="request"
+      ng-options="r.url group by r.group for r in requests"></select>
+  </div>
+  <div ng-show="!!request">
+    <div class="field">
+      <span class="field-label">Description: </span>
+      <p class="field-value">{{request.description}}</p>
+    </div>
+    <div class="field">
+      <span class="field-label">History: </span>
+      <span class="field-value">Sprint added: {{request.sprintAdded}}; Sprint last updated: {{request.sprintLastUpdated}}</span>
+    </div>
+    <div class="field">
+      <span class="field-label">Query data (<span>{{request.queries.length}}</span>): </span>
+      <select class="field-value" ng-change="processRequest(request)" ng-model="query" ng-options="q.dataToPost | json for q in request.queries"></select>
+    </div>
+    <div class="field">
+      <span class="field-label">Description: </span>
+      <p class="field-value">{{query.description}}</p>
+    </div>
+    <button class="btn btn-request" ng-click="processRequest(request)">Request</button>
+    <br/>
+    <hr/>
+    <h4>Example response</h4>
+    <h5>Summary</h5>
+    <ul ng-show="keys">
+      <li>Keys: {{keys | json}}</li>
+      <li ng-repeat="key in keys">{{key}} - #items: {{json[key].length}}</li>
+    </ul>
+    <h5>Data</h5>
+    <pre>{{json | json}}</pre>
+      <!--
+    <tabs class="tabs" ng-model="panes">
+      <pane heading="Data">
+      </pane>
+      <pane heading="Summary 1">
+        <h5>Example response summary 1</h5>
+        <pre>{{leafValues | json}}</pre>
+      </pane>
+      <pane heading="Summary 2">
+        <h5>Example response summary 2</h5>
+        <pre>{{pathValues | json}}</pre>
+      </pane>
+      <pane heading="Summary 3">
+        <h5>Example response summary 3</h5>
+        <pre>{{pathSummaries | json}}</pre>
+      </pane>
+      <pane heading="WIP">
+        <h5>WIP</h5>
+        <pre>{{wip | json}}</pre>
+      </pane>
+    </tabs>
+      -->
+  </div>
+</div>

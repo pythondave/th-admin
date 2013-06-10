@@ -1,0 +1,75 @@
+<h3 style="float: left; ">Applications to review</h3>
+
+<div style="float: right; margin-top: 12px; " ng-init="wrap=true" class="summary">
+  <span style="padding: 0 10px;">Display type: </span>
+  <button class="btn btn-small" ng-click="wrap=true" ng-class="{'btn-success':wrap}">
+    <span simple-tooltip="With text wrapping">Wrap</span>
+  </button>
+  <button class="btn btn-small" ng-click="wrap=false" ng-class="{'btn-success':!wrap}">
+    <span simple-tooltip="Without text wrapping">No wrap</span>
+  </button>
+</div>
+
+<div class="alerts" ng-class="roles.getActive().val">
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
+</div>
+
+<div style="clear: both; " ng-show="applications.length==0">
+  <p>No applications found</p>
+</div>
+
+<div style="clear: both; " ng-show="applications.length>0" class="summary">{{applications.length}} applications</div>
+<table ng-show="applications.length>0" class="table table-striped"
+       ng-style="{true: { 'white-space': 'nowrap' }}[!wrap]">
+  <thead>
+    <tr>
+      <th class="th-left">
+        <span class="sort" ng-click="sort('teacher.fullName')">Applicant</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-teacher.score')" tooltip="Score for teacher">Score</span>
+      </th>
+      <th class="th-left">
+        <span class="sort" ng-click="sort('job.subject')">Subject</span>, 
+        <span class="sort" ng-click="sort('job.role')">Role</span>, 
+        <span class="sort" ng-click="sort('job.schoolName')">School</span>, 
+        <span class="sort" ng-click="sort('job.country')">Country</span>
+      </th>
+      <th class="th-left">
+        <span class="sort" ng-click="sort('-dateApplied')">Date</span>
+      </th>
+      <th style="min-width: 20px;"></th>
+      <th class="th-center" colspan="2">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="a in applications" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
+      <td class="td-left">
+        <a ng-href="{{a.teacher.profileUrl}}" target="_blank">{{a.teacher.fullName}}</a>
+        <span simple-tooltip="{{a.coverMessage}}" class="point">
+          <i ng-show="a.coverMessage" class="icon-comment"></i>
+        </span>
+        <span simple-tooltip="Applied {{a.dateApplied | date:'EEE dd MMM yyyy h:mma'}}" ng-show="a.daysSinceApplied < 3" class="new">new<span>
+      </td>
+      <td class="td-center">
+        <span class="badge" ng-class="badgeClass(a.teacher.score)">{{a.teacher.score}}</span>
+      </td>
+      <td class="td-left">
+        <b>{{a.job.subject}}</b>, {{a.job.role}}, <b>{{a.job.schoolName}}</b>, {{a.job.country}}
+      </td>
+      <td class="td-left">
+        {{a.dateApplied | date:'dd MMM yyyy'}} <!-- h:mma -->
+      </td>
+      <td class="td-center">
+        <img ng-show="a.processing" src="http://img.cdn.tl/loading1.gif" />
+      </td>
+      <td class="td-center">
+        <button class="btn btn-success btn-small" ng-click="process(a, true)" ng-disabled="a.processing" style="white-space: nowrap">Put forward</button>
+      </td>
+      <td class="td-center">
+        <button class="btn btn-danger btn-small" ng-click="process(a, false)" ng-disabled="a.processing">Decline</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div ng-show="applications.length>0" class="summary">{{applications.length}} applications</div>

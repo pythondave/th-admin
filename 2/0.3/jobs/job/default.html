@@ -1,0 +1,109 @@
+<h3 style="float: left; ">Job overview</h3>
+
+<div style="float: right; margin-top: 12px; " ng-init="cumulative=false" class="summary">
+  <span>Display type: </span>
+  <button class="btn btn-small" ng-click="cumulative=false" ng-class="{'btn-success':cumulative==false}">
+    <span simple-tooltip="Show current application statuses only">Current</span>
+  </button>
+  <button class="btn btn-small" ng-click="cumulative=true" ng-class="{'btn-success':cumulative==true}">
+    <span simple-tooltip="Show implied historical application statuses">Cumulative</span>
+  </button>
+</div>
+
+<div class="alerts" ng-class="roles.getActive().val">
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="closeAlert($index)">{{alert.message}}</alert>
+</div>
+
+<!--<h5>Candidates</h5>-->
+<div style="clear: both; " ng-show="applications.length==0">
+  <p>No applications found for this job</p>
+</div>
+
+<div style="clear: both; " ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>
+<table ng-show="applications.length>0" class="table table-nowrap table-job-applications">
+  <thead>
+    <tr>
+      <th class="th-left">
+        <span class="sort" ng-click="sort('teacher.fullName')">Candidate</span>
+      </th>
+      <th></th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-teacher.score')" simple-tooltip="Score for teacher">Score</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-statusId')">Shortlisted</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-dateInterviewed')">Interviewed</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-dateOfferMade')">Offer made</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-dateAccepted')">Accepted</span>
+      </th>
+      <th class="th-center">
+        <span class="sort" ng-click="sort('-8')">Rejected</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody ng-repeat="a in applications">
+    <tr ng-class="{ 0:'tr-odd', 1:'tr-even' }[$index%2]">
+      <td>
+        <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 24px; " />
+        <span ng-click="a.expanded=!a.expanded" simple-tooltip="{{a.adminNote}}" class="point">
+          <a>{{a.teacher.fullName}}</a>
+          <i ng-show="a.adminNote" class="icon-comment"></i>
+        </span>
+        <span simple-tooltip="Put forward {{a.datePutForward | date:'EEE dd MMM yyyy h:mma'}}" ng-show="a.daysSincePutForward < 3" class="new">new<span>
+      </td>
+      <td style="width: 20px;">
+        <img ng-show="a.processing" src="http://img.cdn.tl/loading1.gif" />
+        <span ng-hide="a.processing" ng-click="a.expanded=!a.expanded" class="point">
+          <i ng-show="a.dirty" class="icon-flag"></i>
+          <span ng-hide="a.dirty">
+            <i ng-show="a.expanded" class="icon-chevron-up"></i>
+            <i ng-hide="a.expanded" class="icon-chevron-down"></i>
+          </span>
+        </span>
+      </td>
+      <td class="td-center">
+        <span class="badge" ng-class="a.teacher.badgeClass">{{a.teacher.score}}</span>
+      </td>
+      <td ng-repeat="status in (statuses | filter: { postPF: true })" ng-click="changeStatus(a, status)"
+          class="td-center" ng-class="{ toggle: a.statusId!=status.id }; getStatusClass(a, status)">
+        <span ng-show="!cumulative && a.statusId==status.id" simple-tooltip="{{a.statusDate | date:'EEE dd MMM yyyy h:mma'}}">
+          <i class="icon-ok"></i>
+        </span>
+        <span ng-show="cumulative && a.cumulativeMap[$index+3]==1">
+          <i class="icon-ok"></i>
+        </span>
+      </td>
+    </tr>
+    <tr ng-show="a.expanded">
+      <td colspan="9">
+        <div style="width:75%; float: left;">
+          <div>
+            <a ng-href="{{a.teacher.profileUrl}}" target="_blank" style="margin-right: 10px;">View profile</a>
+
+            <span ng-repeat="s in scores" class="badge point" ng-class="{true:a.teacher.badgeClass, false:s.hoverClass}[$index==a.teacher.score];" ng-click="process(a, 'teacher.score', $index)" style="margin-right: 3px;">{{$index}}</span>
+            <span class="badge point" ng-class="a.badgeClass" style="margin: 0 15px;" simple-tooltip="Score for application">{{a.score}}</span>
+            <i ng-show="true" class="icon-comment"></i>
+          </div>
+          <textarea style="margin: 5px; width: 100%; min-height: 70px;" ng-model="a.adminNote" ng-change="processWithThrottle(a, 'adminNote', a.adminNote)"></textarea>
+        </div>
+        <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 120px; float: right; " />
+      <td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th class="th-left">Totals</th>
+      <th></th>
+      <th></th>
+      <th ng-show="!cumulative" ng-repeat="x in totals.slice(3,8)" class="th-center">{{x}}</th>
+      <th ng-show="cumulative" ng-repeat="x in cumulativeTotals.slice(3,8)" class="th-center">{{x}}</th>
+    </tr>
+  </tfoot>
+</table>
+<div ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>

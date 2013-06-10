@@ -1,0 +1,139 @@
+<h3 style="float: left; ">Vacancies</h3>
+
+<div class="summary" style="float: right; margin-top: 12px; " ng-init="cumulative=false; wrap=true; compact=true;">
+  <span style="padding: 0 10px;">Display type: </span>
+  <button class="btn btn-small" ng-click="cumulative=false;" ng-class="{'btn-success':!cumulative}">
+    <span simple-tooltip="Show current application statuses only">Current</span>
+  </button>
+  <button class="btn btn-small" ng-click="cumulative=true;" ng-class="{'btn-success':cumulative}">
+    <span simple-tooltip="Show implied historical application statuses">Cumulative</span>
+  </button>
+  <span style="padding: 0 8px;"></span>
+  <button class="btn btn-small" ng-click="wrap=true; compact=true;" ng-class="{'btn-success':wrap}">
+    <span simple-tooltip="With text wrapping and compact headers">Wrap</span>
+  </button>
+  <button class="btn btn-small" ng-click="wrap=false; compact=false;" ng-class="{'btn-success':!wrap}">
+    <span simple-tooltip="Without text wrapping and compact headers">No wrap</span>
+  </button>
+</div>
+
+<div style="clear: both;" ng-show="jobs.length==0">
+  <p>No vacancies found</p>
+</div>
+
+<div style="clear: both;" ng-show="jobs.length>0" class="summary">
+  <span ng-show="unrefinedJobs.length==200">Latest</span>
+  <span>{{jobs.length}} vacancies</span><span ng-show="unrefinedJobs.length==200">*</span>
+  <span ng-show="unrefinedJobs.length==200" style="color: silver; margin-left: 30px; ">
+    <span ng-show="jobs.length==200">* there may be more, but 200 is the limit. Use the filters to narrow down your search.</span>
+    <span ng-hide="jobs.length==200">* there may be more, but the original request was limited. Use the filters to narrow down your search.</span>
+  </span>
+</div>
+<div class="table-container">
+  <table ng-show="jobs.length>0" class="table table-striped table-jobs"
+         ng-style="{true: { 'white-space': 'nowrap' }}[!wrap]">
+    <thead>
+      <tr>
+        <th ng-hide="fields.count==0" class="th-left float-immediate-child-spans">
+          <span ng-show="fields.subject">
+            <span class="sort" ng-click="sort('subject')">Subject</span>
+          </span>
+          <span ng-show="fields.role">
+            <span ng-hide="fields.role.index==0">, </span>
+            <span class="sort" ng-click="sort('role')">Role</span>
+          </span>
+          <span ng-show="fields.schoolName">
+            <span ng-hide="fields.schoolName.index==0">, </span>
+            <span class="sort" ng-click="sort('schoolName')">School</span>
+          </span>
+          <span ng-show="fields.country">
+            <span ng-hide="fields.country.index==0">, </span>
+            <span class="sort" ng-click="sort('country')">Country</span>
+          </span>
+        </th>
+        <th class="th-center" style="white-space: nowrap;">
+          <span class="th-compact" ng-click="compact=!compact">
+            <span simple-tooltip="Compact / Standard">{{{true:'&gt;', false:'&lt;'}[compact]}}</span>
+          </span>
+          <span class="sort" ng-click="sort('-numApplied')">
+            <span simple-tooltip="{{header.tips.applied}}">{{header.applied}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-numPutForward')">
+            <span simple-tooltip="{{header.tips.putForward}}">{{header.putForward}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-numShortlisted')">
+            <span simple-tooltip="{{header.tips.shortlisted}}">{{header.shortlisted}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-numInterviewed')">
+            <span simple-tooltip="{{header.tips.interviewed}}">{{header.interviewed}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-numOffersMade')">
+            <span simple-tooltip="{{header.tips.offersMade}}">{{header.offersMade}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-isAccepted')">
+            <span simple-tooltip="{{header.tips.accepted}}">{{header.accepted}}</span>
+          </span>
+        </th>
+        <th class="th-center">
+          <span class="sort" ng-click="sort('-numRejected')">
+            <span simple-tooltip="{{header.tips.rejected}}">{{header.rejected}}</span>
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="j in jobs" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'" class="tr-narrow">
+        <td ng-hide="fields.count==0" class="td-left">
+          <a ng-href="#/jobs/{{j.id}}" class="float-immediate-child-spans">
+            <span ng-show="fields.subject">
+              <span ng-style="{true: { 'font-weight': 'bold' }}[fields.subject.index % 2 == 0]">{{j.subject}}</span>
+            </span>
+            <span ng-show="fields.role">
+              <span ng-hide="fields.role.index==0">, </span>
+              <span ng-style="{true: { 'font-weight': 'bold' }}[fields.role.index % 2 == 0]">{{j.role}}</span>
+            </span>
+            <span ng-show="fields.schoolName">
+              <span ng-hide="fields.schoolName.index==0">, </span>
+              <span ng-style="{true: { 'font-weight': 'bold' }}[fields.schoolName.index % 2 == 0]">{{j.schoolName}}</span>
+            </span>
+            <span ng-show="fields.country">
+              <span ng-hide="fields.country.index==0">, </span>
+              <span ng-style="{true: { 'font-weight': 'bold' }}[fields.country.index % 2 == 0]">{{j.country}}</span>
+            </span>
+            <span simple-tooltip="Created {{j.dateCreated | date:'EEE dd MMM yyyy h:mma'}}" ng-show="j.daysSinceCreated < 3" class="new">&nbsp;new<span>
+          </a>
+        </td>
+        <td class="td-center">{{j.numApplied}}</td>
+        <td class="td-center">{{j.numPutForward}}</td>
+        <td class="td-center">{{j.numShortlisted}}</td>
+        <td class="td-center">{{j.numInterviewed}}</td>
+        <td class="td-center">{{j.numOffersMade}}</td>
+        <td class="td-center"><i class="icon-ok" ng-show="j.isAccepted"></i></td>
+        <td class="td-center">{{j.numRejected}}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th ng-hide="fields.count==0" class="th-left">Totals</th>
+        <th class="th-center">{{totals.numApplied}}</th>
+        <th class="th-center">{{totals.numPutForward}}</th>
+        <th class="th-center">{{totals.numShortlisted}}</th>
+        <th class="th-center">{{totals.numInterviewed}}</th>
+        <th class="th-center">{{totals.numOffersMade}}</th>
+        <th class="th-center">{{totals.isAccepted}}</th>
+        <th class="th-center">{{totals.numRejected}}</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div ng-show="jobs.length>0" class="summary">{{jobs.length}} vacancies</div>

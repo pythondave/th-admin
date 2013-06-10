@@ -1,0 +1,18 @@
+<h3>Settings</h3>
+
+<div class="filter">
+  <span>Setting</span>
+  <select ng-model="settingName" ng-options="s for s in settings" style="width: 500px;"></select>
+  <i class="icon-remove" ng-hide="!settingName" ng-click="settingName=undefined"></i>
+</div>
+
+<img ng-show="processing" src="http://img.cdn.tl/loading1.gif" />
+
+<div ng-show="!!settingName && !processing">
+  <textarea ng-change="dirty=true" ng-model="settingValue" style="margin-top: 10px; width: 486px; height: 200px;"></textarea>
+
+  <div style="width: 500px;">
+    <button ng-show="dirty" class="btn btn-info" ng-click="process()" style="display: block; float: right;">Save</button>
+    <span ng-show="dirty==false" style="display: block; float: right;">Saved</button>
+  <div>
+</div>

@@ -1,18 +1,20 @@
 //Jobs
-app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesService, subjectsService, positionsService, jobsService) {
+app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesService, subjectsService, rolesService, jobsService) {
   //get and set data
-  jobsService.getAndSetData({});
+  jobsService.list.setSortOrderPaths(['dateCreated']);
+
+  jobsService.getAndSetData({ type: 'current' });
   schoolNamesService.getAndSetData();
   countriesService.getAndSetData();
   subjectsService.getAndSetData();
-  positionsService.getAndSetData();
+  rolesService.getAndSetData();
 
   /* *** TODO: create and use a filters service - to help better organise & simplify the code in this controller
   $scope.filters = [
     { name: 'schoolName', listName: 'schoolNames', service: 'schoolNamesService', label: 'School' },
     { name: 'country', listName: 'countries', service: 'countriesService', label: 'Country' },
     { name: 'subject', listName: 'subjects', service: 'subjectsService', label: 'Subjects' },
-    { name: 'position', listName: 'positions', service: 'positionsService', label: 'Positions' }
+    { name: 'role', listName: 'roles', service: 'rolesService', label: 'Positions' }
   ];
   */
 
@@ -23,18 +25,19 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
     if ($scope.schoolName && $scope.schoolName.type === 'Refine') o.schoolName = $scope.schoolName.val;
     if ($scope.country && $scope.country.type === 'Refine') o.country = $scope.country.val;
     if ($scope.subject && $scope.subject.type === 'Refine') o.subject = $scope.subject.val;
-    if ($scope.position && $scope.position.type === 'Refine') o.position = $scope.position.val;
+    if ($scope.role && $scope.role.type === 'Refine') o.role = $scope.role.val;
     return o;
   };
 
   //search (get data from the server)
   var search = function() { jobsService.getAndSetData(getFilterSearchValues()); };
-  var getFilterSearchValues = function(propertyName) {
+  var getFilterSearchValues = function() {
     var o = {};
     if ($scope.schoolName && $scope.schoolName.type === 'Search') o.schoolName = $scope.schoolName.val;
-    if ($scope.country && $scope.country.type === 'Search') o.country = $scope.country.val;
-    if ($scope.subject && $scope.subject.type === 'Search') o.subject = $scope.subject.val;
-    if ($scope.position && $scope.position.type === 'Search') o.position = $scope.position.val;
+    if ($scope.country && $scope.country.type === 'Search') o.countryId = $scope.country.id;
+    if ($scope.subject && $scope.subject.type === 'Search') o.subjectId = $scope.subject.id;
+    if ($scope.role && $scope.role.type === 'Search') o.roleId = $scope.role.id;
+    o.type = jobsService.dataPosted.type;
     return o;
   };
 
@@ -50,27 +53,28 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
   $scope.$watch('schoolName', function() { filterChanged.apply(this, arguments); });
   $scope.$watch('country', function() { filterChanged.apply(this, arguments); });
   $scope.$watch('subject', function() { filterChanged.apply(this, arguments); });
-  $scope.$watch('position', function() { filterChanged.apply(this, arguments); });
+  $scope.$watch('role', function() { filterChanged.apply(this, arguments); });
 
   //update filters
   var updateFilter = function(name, searchList, refineList, includeRefine) { //name = name of the data object used for the filter
     if (!$scope[name]) { //not initiated => add search options
       $scope[name] = [ undefined ];
-      _.each(searchList, function(item) { $scope[name].push({ name: item.name, val: item.name, type: 'Search' }); });
+      _.each(searchList, function(item) { $scope[name].push({ id: item.id, name: item.name, val: item.name, type: 'Search' }); });
     } else { //initiated => remove refine options
       _.rejectInPlace($scope[name], function(item) { return item && item.type === 'Refine'; });
     }
     if (includeRefine) { //refine options needed => add refine options at index 1 (so the groups are ordered correctly)
-      _.each(refineList, function(item, index) { $scope[name].splice(index+1, 0, { name: item.name, val: item.val, type: 'Refine' }); });
+      _.each(refineList, function(item, index) { $scope[name].splice(index+1, 0, { id: item.id, name: item.name, val: item.val, type: 'Refine' }); });
     }
   };
 
   //data set event
   var isSet = function() {
-    return (schoolNamesService.isSet && countriesService.isSet && subjectsService.isSet && positionsService.isSet && jobsService.isSet);
+    return (schoolNamesService.isSet && countriesService.isSet && subjectsService.isSet && rolesService.isSet && jobsService.isSet);
   };
   $scope.$watch(isSet, function(isSet) {
     if (!isSet) return;
+
     //once all data is set... update the filters
     var includeRefine = (jobsService.list.data.length < 200); //don't include refine options if we have 200 rows or more
 
@@ -79,12 +83,12 @@ app.controller('JobsMenuCtrl', function($scope, schoolNamesService, countriesSer
     if ($scope.schoolName && $scope.schoolName.type === 'Refine') $scope.schoolName = undefined;
     if ($scope.country && $scope.country.type === 'Refine') $scope.country = undefined;
     if ($scope.subject && $scope.subject.type === 'Refine') $scope.subject = undefined;
-    if ($scope.position && $scope.position.type === 'Refine') $scope.position = undefined;
+    if ($scope.role && $scope.role.type === 'Refine') $scope.role = undefined;
 
     updateFilter('schoolNames', schoolNamesService.list.data, jobsService.list.summarise('schoolName'), includeRefine && !$scope.schoolName);
     updateFilter('countries', countriesService.list.data, jobsService.list.summarise('country'), includeRefine && !$scope.country);
     updateFilter('subjects', subjectsService.list.data, jobsService.list.summarise('subject'), includeRefine && !$scope.subject);
-    updateFilter('positions', positionsService.list.data, jobsService.list.summarise('position'), includeRefine && !$scope.position);
+    updateFilter('roles', rolesService.list.data, jobsService.list.summarise('role'), includeRefine && !$scope.role);
   });
 });
 
@@ -94,23 +98,31 @@ app.controller('JobsCtrl', function($scope, jobsService) {
   //headers
   var standardHeaders = { applied: 'Applied', putForward: 'Put forward', shortlisted: 'Shortlisted', interviewed: 'Interviewed', offersMade: 'Offers made', accepted: 'Accepted', rejected: 'Rejected' };
   var compactHeaders = { applied: 'A', putForward: 'PF', shortlisted: 'S', interviewed: 'I', offersMade: 'OM', accepted: 'A', rejected: 'R' };
-  $scope.$watch('useCompactHeaders', function(value) {
+
+  $scope.$watch('compact', function(value) {
     $scope.header = ( value ? compactHeaders : standardHeaders );
     $scope.header.tips = ( value ? standardHeaders : undefined );
   });
 
-  var getFields = function(requestParams) {
+  $scope.$watch('cumulative', function(newValue, oldValue) {
+    if (newValue === oldValue) return;
+    var dataToPost = _.clone(jobsService.dataPosted);
+    dataToPost.type = (newValue ? 'cumulative' : 'current');
+    jobsService.getAndSetData(dataToPost);
+  });
+
+  var getFields = function(dataPosted) {
     var fields = {}, i = 0;
-    if (!requestParams.subject) { fields.subject = { index: i }; i++; }
-    if (!requestParams.position) { fields.position = { index: i }; i++; }
-    if (!requestParams.schoolName) { fields.schoolName = { index: i }; i++; }
-    if (!requestParams.country) { fields.country = { index: i }; i++; }
+    if (!dataPosted.subject) { fields.subject = { index: i }; i++; }
+    if (!dataPosted.role) { fields.role = { index: i }; i++; }
+    if (!dataPosted.schoolName) { fields.schoolName = { index: i }; i++; }
+    if (!dataPosted.country) { fields.country = { index: i }; i++; }
     fields.count = i;
     return fields;
   };
 
   $scope.$on('jobsChanged', function(e) {
-    $scope.fields = getFields(jobsService.requestParams);
+    $scope.fields = getFields(jobsService.dataPosted);
     $scope.unrefinedJobs = jobsService.list.data;
     $scope.jobs = jobsService.list.filteredData;
     $scope.totals = jobsService.getTotals();
@@ -118,49 +130,39 @@ app.controller('JobsCtrl', function($scope, jobsService) {
 });
 
 //Job
-app.controller('JobMenuCtrl', function($scope, $dialog) {
+app.controller('JobMenuCtrl', function($scope, $timeout, $window, $dialog, $stateParams, applicationsService) {
+  $scope.back = function() { $timeout(function() { $window.history.back(); }); };
+
   $scope.addCandidate = function() {
-    var opts = { backdrop: true, keyboard: true, backdropFade: true, backdropClick: false };
+    var opts = { backdrop: true, keyboard: true, backdropFade: true, backdropClick: true };
 
     var afterClose = function(response) {
       if (!response || !response.doIt) return;
-      console.log('afterClose', response);
+      applicationsService.addApplication({ jobId: $stateParams.jobId, teacherId: response.teacher.id });
     };
 
-    _.extend(opts, { templateUrl: 'jobs/job/addCandidate.html', controller: 'JobAddCandidateController' });
+    _.extend(opts, { templateUrl: 'jobs/job/addCandidate.html?c', controller: 'JobAddCandidateController' });
     $dialog.dialog(opts).open().then(afterClose);
   };
 });
 
-app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsService, listService, applicationService) {
-  applicationsService.getAndSetData({ jobId: $stateParams.jobId });
+app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsService, listService, scoresService, applicationStatusesService) {
+  applicationsService.getAndSetData({ jobId: $stateParams.jobId, statusIds: [2, 4, 5, 6, 7, 8] });
   $scope.sort = applicationsService.list.sort;
-  applicationsService.list.setSortOrderPaths(['-datePutForward', 'teacher.fullname']);
-
-  //scores
-  var scoreMapping = function(score, outOf) { //*** WIP - move to a service
-    outOf = outOf || 10;
-    if (score/outOf >= 0.8) return 'success';
-    if (score/outOf >= 0.5) return 'warning';
-    if (score/outOf >= 0) return 'important';
-  };
-  var badgeClass = function(score, outOf) { //*** WIP - move to a service
-    var x = scoreMapping(score, outOf);
-    return ( x ? 'badge-' + x : '');
-  };
-  $scope.scores = [];
-  for (var i = 0; i <= 10; i++) {
-    $scope.scores.push({ hoverClass: scoreMapping(i, 10)+'-hover' });
-  }
+  applicationsService.list.setSortOrderPaths(['-datePutForward', 'teacher.fullName']);
+  $scope.statuses = applicationStatusesService.statuses;
+  $scope.scores = scoresService.scores;
 
   $scope.$on('applicationsChanged', function(e) {
     $scope.applications = applicationsService.list.filteredData;
-    _($scope.applications).each(function(a) {
-      a.badgeClass = badgeClass(a.score, 10);
-      a.daysSincePutForward = (new Date() - new Date(a.datePutForward))/1000/60/60/24;
-    }).value();
-    $scope.totals = applicationsService.getTotals();
+    setDerivedData();
   });
+
+  var setDerivedData = function() {
+    applicationsService.setDerivedData();
+    $scope.totals = applicationsService.getTotals();
+    $scope.cumulativeTotals = applicationsService.getCumulativeTotals();
+  };
 
   //processing
   $scope.alerts = new listService.List();
@@ -176,24 +178,23 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
     application.dirty = true;
     $scope.debounceFunction();
   };
-  $scope.process = function(application, propertyName, newPropertyValue, additionalOptions) {
+  $scope.process = function(application, propertyName, newPropertyValue, additionalDataToPost) {
     //*** TODO: can be simplified
-    additionalOptions = additionalOptions || {};
-    var dataToPost = additionalOptions.additionalDataToPost || {}; dataToPost[propertyName] = newPropertyValue;
+    var dataToPost = additionalDataToPost || {}; dataToPost[propertyName] = newPropertyValue;
     var process = applicationsService.process(application, dataToPost, { removeFromList: false }); //promise
     var alert = {};
 
-    var label = application.teacher.fullname;
+    var label = application.teacher.fullName;
     var success = function() {
       setProcessedMessage();
-      if (propertyName === 'score') {
+      if (propertyName === 'score') { //change score
         application.score = newPropertyValue;
-        application.badgeClass = badgeClass(newPropertyValue, 10);
-      } else if (propertyName === 'adminNote') {
-      } else {
-        var dateField = additionalOptions.field.dateField;
-        if (!newPropertyValue) { delete application[dateField]; } else { application[dateField] = (new Date()).toISOString(); }
+      } else if (propertyName === 'statusId') { //change status
+        application.previousStatusId = application.statusId;
+        application.statusId = applicationStatusesService.newStatus.id;
+        application.statusDate = (new Date()).toISOString();
       }
+      setDerivedData();
     };
     var setProcessedMessage = function() { //promise success
       alert.message = 'Updated ' + label;
@@ -213,22 +214,23 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
     process.then(success, setSevereErrorMessage).then(displayMessage);
   };
 
+  $scope.getStatusClass = function(application, status) {
+    return 'status-type' + applicationStatusesService.getStatusChangeType(application.statusId, status.id);
+  };
 
-  $scope.toggleField = function(application, fieldName) {
-    applicationService.application = application;
-    applicationService.field = applicationService.statuses[fieldName];
-    var isTicked = !!application[applicationService.field.dateField];
+  $scope.changeStatus = function(application, newStatus) {
+    applicationStatusesService.setStatusChangeData(application, newStatus);
+    if (application.statusId === newStatus.id) return;
+
     var opts = { backdrop: true, keyboard: true, backdropFade: true, backdropClick: false };
+    opts = _.extend(opts, { templateUrl: 'jobs/job/changeApplicationStatus.html?a', controller: 'changeApplicationStatusController' });
 
     var afterClose = function(response) {
       if (!response || !response.doIt) return;
       var additionalDataToPost = (response.sendMessage ? { message: response.message } : undefined );
-      var additionalOptions = { additionalDataToPost: additionalDataToPost, field: applicationService.field };
-      $scope.process(application, applicationService.field.bitField, !isTicked, additionalOptions);
+      $scope.process(application, 'statusId', applicationStatusesService.newStatus.id, additionalDataToPost);
     };
 
-    if (isTicked) _.extend(opts, { templateUrl: 'jobs/job/untickField.html', controller: 'UntickJobFieldController' });
-    if (!isTicked)  _.extend(opts, { templateUrl: 'jobs/job/tickField.html', controller: 'TickJobFieldController' });
     $dialog.dialog(opts).open().then(afterClose);
   };
   $scope.closeAlert = function(index) {
@@ -236,33 +238,42 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, applicationsSe
   };
 });
 
+app.controller('changeApplicationStatusController', function($scope, dialog, applicationStatusesService, settingService){
+  $scope.application = applicationStatusesService.application;
+  $scope.newStatus = applicationStatusesService.newStatus;
+  $scope.currentStatus = applicationStatusesService.currentStatus;
+  $scope.statusChangeType = applicationStatusesService.statusChangeType;
 
-app.controller('TickJobFieldController', function($scope, dialog, applicationService, messageTemplateService){
-  $scope.application = applicationService.application;
-  $scope.field = applicationService.field;
-
-  ///set message (get the template)
+  //set message (get the template)
   var setMessage = function() {
-    var fullname = $scope.application.teacher.fullname;
-    $scope.message = messageTemplateService.replacePlaceholder(messageTemplateService.text, 'fullname', fullname);
+    var fullName = $scope.application.teacher.fullName;
+    $scope.message = settingService.replacePlaceholder(settingService.value, 'fullName', fullName);
   };
-  var type = 'jobTick' + applicationService.field['title'].replace(' ', '');
-  messageTemplateService.getAndSetData({ type: type }).then(setMessage);
+  settingService.getAndSetData($scope.newStatus.messageTemplate).then(setMessage);
 
   $scope.close = function(doIt) {
-    var o = { source: 'tick', field: $scope.field, doIt: doIt };
+    var o = { doIt: doIt };
     if (doIt) o.sendMessage = $scope.sendMessage;
     if (doIt && o.sendMessage) o.message = $scope.message;
     dialog.close(o);
   };
 });
 
-app.controller('UntickJobFieldController', function($scope, dialog, applicationService){
-  $scope.application = applicationService.application;
-  $scope.field = applicationService.field;
-
+app.controller('JobAddCandidateController', function($scope, $rootScope, dialog, $http, limitToFilter){
   $scope.close = function(doIt) {
-    var o = { source: 'untick', field: $scope.field, doIt: doIt };
+    var o = { doIt: doIt, teacher: $scope.teacher };
     dialog.close(o);
+  };
+
+  $scope.$watch('search', function(value) {
+    if (value === undefined) return;
+    $scope.teacher = undefined;
+    if (_.isObject(value)) { $scope.teacher = value; $scope.search = undefined; }
+  });
+
+  $scope.teachers = function(search) {
+    var dataToPost = { statusId: 4, search: search, limit: 5 };
+    return $http.post($rootScope.config.requests.urls.teachers, dataToPost, $rootScope.config.postConfig)
+                .then(function(response){ return response.data.teachers; });
   };
 });

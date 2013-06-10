@@ -38,7 +38,6 @@ body { padding: 60px 0 40px 0; }
   a.float-immediate-child-spans:hover > span { text-decoration: underline; }
 
   /* table */
-  .table-container { margin: 0 100px 0 0; padding: 0 100px 0 0; }
   .table { margin-bottom: 0; width: auto; }
   .table .sort { cursor: pointer; }
   .table .sort:hover { text-decoration: underline; }
@@ -49,20 +48,22 @@ body { padding: 60px 0 40px 0; }
   /* th and td */
   .table-nowrap th, .table-nowrap td { white-space: nowrap }
   /* th */
-  .table th { font-size: 14px; }
+  .table thead th { font-size: 14px; vertical-align: middle; }
   .table .th-left { text-align: left; padding: 3px 8px 3px 0; }
   .table .th-center { text-align: center; padding: 3px 4px 3px 4px; }
-  .table .th-type { color: silver; margin-left: -10px; cursor: pointer; }
-  .table .th-type:hover { color: LightGray; }
+  .table .th-compact { color: silver; margin-left: -10px; cursor: pointer; }
+  .table .th-compact:hover { color: SlateGray; }
   /* td */
   .table td { padding: 2px; font-size: 12px; }
   .table .td-center { text-align: center; }
   .table .td-left { text-align: left; }
+  /* tooltip */
+  .zztooltip-inner { position: fixed; width: 600px; background-color: black; color: white; }
+  .tooltip.in { opacity: 1; }
   /* */
   .summary { font-weight: bold; font-size: 11px; }
   .alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
   .alert-severe-error { background-color: red; color: white; }
-  .tooltip.in { opacity: 1; }
   .new { color: #468847; font-weight: bold; }
   .toggle { text-align: center !important; }
   .toggle:hover { background-color: Gainsboro !important; cursor: pointer; }
@@ -73,11 +74,16 @@ body { padding: 60px 0 40px 0; }
   .warning-hover:hover { background-color: #f89406; }
   .info-hover:hover { background-color: #3a87ad; }
   .important-hover:hover { background-color: #b94a48; }
-  .icon-chevron-up:hover, .icon-chevron-down:hover { background-color: Gainsboro }
-
+  .icon-chevron-up, .icon-chevron-down { opacity: 0.2; filter:alpha(opacity=20); }
+  .icon-chevron-up:hover, .icon-chevron-down:hover { opacity: 0.7; filter:alpha(opacity=70); }
+  .icon-ok { background-image: url(glyphicons-halflings-green.png); }
+  .typeahead .active { cursor: pointer; }
 /* teachers */
 
 /* jobs */
+  .table-job-applications .status-type1:hover { background-color: #468847 !important; cursor: pointer; }
+  .table-job-applications .status-type2:hover { background-color: #f89406 !important; cursor: pointer; }
+  .table-job-applications .status-type3:hover { background-color: #b94a48 !important; cursor: pointer; }
 
 /* applications */
 
