@@ -1,0 +1,32 @@
+<div class="modal fade ng-scope in" style="width: 600px;">
+  <div class="modal-header">
+    <h3>Change Status - {{application.teacher.fullName}}</h3>
+  </div>
+  <div class="modal-body">
+    <img ng-src="{{application.teacher.avatarUrl}}" style="width: 100px; padding-right:8px; float: right;" />
+    <div style="float: left; width: 450px;">
+      <div style="font-weight: bold; font-size: 24px; margin: 10px 10px 15px 10px;">
+        {{currentStatus.title}}
+        <i class="icon-forward" style="margin: 0 4px 0 10px; height: 28px; width: 28px; background-size: 938px 318px; background-position: -672px -144px"></i>
+        {{newStatus.title}}
+      </div>
+      <div style="background-color: red; width: 420px; padding: 4px; margin: 4px;" ng-show="statusChangeType==3">
+        <b>WARNING:</b> This is not a normal status change. Only make this change if you're aware of the implications and are absolutely sure.
+      </div>
+      <div style="margin: 15px 0 5px; 0;">
+        <span>Send message: </span>
+        <input ng-init="sendMessage=(statusChangeType!=3)" type="checkbox" ng-model="sendMessage" style="margin-top: -3px"></input>
+      </div>
+    </div>
+    <div ng-show="sendMessage" style="clear: both;">
+      <h5>Message</h5>
+      <textarea ng-model="message" style="width: 515px; height: 200px;"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button ng-click="close(false)" class="btn btn-primary">Cancel</button>
+    <button ng-click="close(true)" class="btn btn-primary">
+      Change status<span ng-show="sendMessage"> and send message</span>
+    </button>
+  </div>
+</di30

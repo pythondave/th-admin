@@ -1,0 +1,24 @@
+//Target:
+
+{
+  "applications": [
+    {
+      "id": id,
+      "score": integer (sample range 3-10, sample => not required),
+      "teacher": {
+        "id": id,
+        "fullname": string (sample length range 7-33),
+        "profileUrl": string (sample length range 23-26),
+        "score": integer (sample range 2-8, sample => not required)
+      },
+      "job": {
+        "id": id,
+        "subject": string,
+        "position": string,
+        "school": string,
+        "country": string
+      },
+      "dateApplied": date
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+/* page */
+body { padding: 60px 0 40px 0; }
+
+/* top menu */
+.sidebar-nav { padding: 19px 0; }
+.navbar .brand { padding: 0; margin: 0; }
+
+@media (max-width: 979px) {
+  body { padding: 0 0 40px 0; }
+  .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner { padding: 0; }
+  .navbar-text.pull-right {
+    float: none;
+    padding: 0 5px;
+    margin: 0; 
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top { margin: 0; }
+}
+.navbar .container-fluid { background-color: #272737; }
+.navbar-inverse .nav .active>a, .navbar-inverse .nav .active>a:hover, .navbar-inverse .nav .active>a:focus { background-color: rgb(13, 19, 48); }
+
+/* left menu */
+.container-left { max-width: 260px; }
+.container-left button { width: 240px; display: block; margin-bottom: 8px; }
+.search { margin: 20px 0 10px 0; }
+.search .input-append input { width: 199px; }
+.filter span { font-size: 11px; font-weight: bold; display: block; }
+.filter select { width: 240px; margin-bottom: 5px; }
+.input span { font-size: 11px; font-weight: bold; display: block; }
+.input input { width: 225px; margin-bottom: 5px; }
+.icon-remove { position: relative; color: gray; margin-left: -45px; cursor: pointer; z-index: 2; }
+
+/* shared */
+  h3 { margin: 5px 0 20px 0; }
+  .float-immediate-child-spans > span { float: left; }
+  a.float-immediate-child-spans:hover > span { text-decoration: underline; }
+
+  /* table */
+  .table { margin-bottom: 0; width: auto; }
+  .table .sort { cursor: pointer; }
+  .table .sort:hover { text-decoration: underline; }
+  /* tr */
+  .table .tr-processing { background-color: gray !important; }
+  .table .tr-odd { background-color: #f9f9f9; }
+  .tr-narrow, .tr-narrow td, .tr-narrow [class*="span"] { line-height: 16px; min-height: 16px; }
+  /* th and td */
+  .table-nowrap th, .table-nowrap td { white-space: nowrap }
+  /* th */
+  .table thead th { font-size: 14px; vertical-align: middle; }
+  .table .th-left { text-align: left; padding: 3px 8px 3px 0; }
+  .table .th-center { text-align: center; padding: 3px 4px 3px 4px; }
+  .table .th-compact { color: silver; margin-left: -10px; cursor: pointer; }
+  .table .th-compact:hover { color: SlateGray; }
+  /* td */
+  .table td { padding: 2px; font-size: 12px; }
+  .table .td-center { text-align: center; }
+  .table .td-left { text-align: left; }
+  /* tooltip */
+  .tooltip-inner { text-shadow: none; }
+  .tooltip-inner hr { margin: 3px 0 5px 0; }
+  .tooltip-inner .heading { display: block; text-align: center; font-weight: bold; }
+  .tooltip-wide .tooltip-inner { max-width: 600px; text-align: left; }
+  .tooltip.in { opacity: 1; }
+  /* */
+  .summary { font-weight: bold; font-size: 11px; }
+  .alerts { position: fixed; width: 400px; top: 60px; right: 20px; }
+  .alert-severe-error { background-color: red; color: white; }
+  .new { color: #468847; font-weight: bold; }
+  .toggle { text-align: center !important; }
+  .toggle:hover { background-color: Gainsboro !important; cursor: pointer; }
+  .icon-pencil { margin: 0; padding: 0; }
+  .table tbody+tbody { border-top: 0 }
+  .point { cursor: pointer; }
+  .success-hover:hover { background-color: #468847; }
+  .warning-hover:hover { background-color: #f89406; }
+  .info-hover:hover { background-color: #3a87ad; }
+  .important-hover:hover { background-color: #b94a48; }
+  .icon-chevron-up, .icon-chevron-down { opacity: 0.2; filter:alpha(opacity=20); }
+  .icon-chevron-up:hover, .icon-chevron-down:hover { opacity: 0.7; filter:alpha(opacity=70); }
+  .icon-ok { background-image: url(glyphicons-halflings-green.png); }
+  .typeahead .active { cursor: pointer; }
+  .entity-info .title { display: inline-block; width: 100px; font-size: 11px; font-weight: bold; vertical-align: top; }
+
+/* teachers */
+
+/* jobs */
+  .table-job-applications .status-type1:hover { background-color: #468847 !important; cursor: pointer; }
+  .table-job-applications .status-type2:hover { background-color: #f89406 !important; cursor: pointer; }
+  .table-job-applications .status-type3:hover { background-color: #b94a48 !important; cursor: pointer; }
+
+/* applications */
+
+/* dev */
+.wip { background-color: yellow; }

@@ -1,0 +1,24 @@
+<div class="modal fade ng-scope in" style="width: 400px;">
+  <div class="modal-header">
+    <h3>Add candidate</h3>
+  </div>
+  <div class="modal-body" style="height: 200px;">
+    <div class="search">
+      <div class="input-append">
+        <input type="text" class="input-small" placeholder="Search candidate name" ng-model="search" typeahead="t as t.fullName for t in teachers($viewValue)" style="width: 250px;">
+        <span class="add-on"><i class="icon-search"></i></span>
+        <i class="icon-remove" ng-hide="!search" ng-click="search=undefined"></i>
+      </div>
+    </div>
+    <div ng-show="!!teacher">
+      <img ng-src="{{teacher.avatarUrl}}" style="width: 100px; margin: 0 20px; float: left;"></img>
+      <div style="float: left;">
+        <a ng-href="{{teacher.profileUrl}}" target="_blank">{{teacher.fullName}}</a>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button ng-click="close(false)" class="btn btn-primary">Cancel</button>
+    <button ng-show="!!teacher" ng-click="close(true)" class="btn btn-primary">Add candidate</button>
+  </div>
+</div>

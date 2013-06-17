@@ -1,0 +1,38 @@
+<h3>Candidates to review</h3>
+
+<div class="alerts" ng-class="roles.getActive().val">
+  <alert ng-repeat="alert in alerts.data" type="alert.type" close="alerts.removeByIndex($index)">{{alert.message}}</alert>
+</div>
+
+<div ng-show="teachers.length==0">
+  <p>All matching teachers pending approval have been processed!</p>
+  <p>You can refresh the page to check for more.</p>
+</div>
+
+<div ng-show="teachers.length>0" class="summary">{{teachers.length}} candidates</div>
+<table ng-show="teachers.length>0" class="table table-striped">
+  <thead>
+    <tr>
+      <th>Candidate</th>
+      <th></th>
+      <th colspan="2">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="t in teachers" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
+      <td>
+        <a ng-href="{{t.profileUrl}}" target="_blank">{{t.fullName}}</a>
+      </td>
+      <td style="width: 20px;">
+        <img ng-show="t.processing" src="http://img.cdn.tl/loading1.gif" />
+      </td>
+      <td>
+        <button class="btn btn-success btn-small" ng-click="process(t, 4)" ng-disabled="t.processing">Approve</button>
+      </td>
+      <td>
+        <button class="btn btn-danger btn-small" ng-click="process(t, 5)" ng-disabled="t.processing">Decline</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div ng-show="teachers.length>0" class="summary">{{teachers.length}} candidates</div>

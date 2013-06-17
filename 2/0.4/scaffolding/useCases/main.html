@@ -1,0 +1,45 @@
+<div ng-controller="mainController" style="max-width: 900px;">
+  <h3 style="float: left;">Use Case Viewer</h3>
+  <a href="../../../../default.html" style="float: right; margin-top: 25px;">Dashboard</a>
+
+  <div class="field" style="clear: both; padding-top: 20px;">
+    <span class="field-label">Use Cases (<span>{{useCases.length}}</span>): </span>
+    <select class="field-value" ng-model="useCase" ng-options="u.title group by u.group for u in useCases">
+    </select>
+  </div>
+
+  <div ng-show="!!useCase">
+    <div class="field">
+      <span class="field-label">Id</span>
+      <span class="field-value">{{useCase.id}}</span>
+    </div>
+    <div class="field">
+      <span class="field-label">Group</span>
+      <span class="field-value">{{useCase.group}}</span>
+    </div>
+    <div class="field">
+      <span class="field-label">Use case</span>
+      <span class="field-value">As an {{useCase.group}} I need to... {{useCase.title}}</span>
+    </div>
+    <div class="field">
+      <span class="field-label">Notes</span>
+      <span class="field-value">{{useCase.notes}}</span>
+    </div>
+    <div class="field">
+      <span class="field-label">API requests</span>
+      <span class="field-value">
+        <a target="_blank" href="../api/default.html#/usecases/{{useCase.id}}">API requests</a> (*** TODO)
+      </span>
+    </div>
+    <div class="field">
+      <span class="field-label">Demos</span>
+      <span class="field-value">
+        <ul style="margin: 0 0 0 15px;">
+          <li ng-repeat="x in useCase.demos">
+            <a target="_blank" href="../../default.html#{{x}}">{{x}}</a>
+          </li>
+        </ul>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,4 @@
+body { margin: 40px; }
+.field { min-height: 28px; font-size: 12px; line-height: 16px; }
+.field-label { display: block; float: left; width: 130px; font-weight: bold; }
+.field-value { display: inline-block; width: 500px; clear: both; font-size: 12px; }
