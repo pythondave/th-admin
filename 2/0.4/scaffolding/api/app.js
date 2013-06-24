@@ -425,6 +425,8 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
     if (!$scope.request) return;
     return $scope.getRequestLink() + '/' + _.indexOf($scope.request.queries, $scope.query);
   };
+
+  $scope.processRequest($scope.request);
 });
 
 app.run(function($rootScope) {
