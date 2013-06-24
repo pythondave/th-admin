@@ -1,10 +1,11 @@
-<div ng-controller="mainController" style="max-width: 900px;">
+<div style="max-width: 900px;">
   <h3 style="float: left;">Server API Viewer</h3>
   <a href="../../../../default.html" style="float: right; margin-top: 25px;">Dashboard</a>
   <div class="field" style="clear: both; padding-top: 20px;">
     <span class="field-label">Request URL (<span>{{requests.length}}</span>): </span>
     <select class="field-value" ng-change="query=request.queries[0]; processRequest(request); " ng-model="request"
       ng-options="r.url group by r.group for r in requests"></select>
+    <a ng-show="request" href="{{getRequestLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
   </div>
   <div ng-show="!!request">
     <div class="field">
@@ -18,6 +19,7 @@
     <div class="field">
       <span class="field-label">Query data (<span>{{request.queries.length}}</span>): </span>
       <select class="field-value" ng-change="processRequest(request)" ng-model="query" ng-options="q.dataToPost | json for q in request.queries"></select>
+      <a ng-show="query" href="{{getQueryLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
     </div>
     <div class="field">
       <span class="field-label">Description: </span>

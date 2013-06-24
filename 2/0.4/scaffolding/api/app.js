@@ -1,10 +1,19 @@
-var app = angular.module('app', ['ui.bootstrap', 'ngMockE2E', 'ngResource']);
+var app = angular.module('app', ['ui.bootstrap', 'ngMockE2E', 'ngResource', 'ui.compat']);
+
+app.config(function($stateProvider) {
+  var mainView = { 'container-main': { templateUrl: 'main.html', controller: 'MainCtrl' } };
+
+  $stateProvider
+    .state('requests', { url: '', views: mainView })
+    .state('request', { url: '/:requestId', views: mainView })
+    .state('query', { url: '/:requestId/:dataIndex', views: mainView });
+});
 
 app.run(function(config) {
   config.serverSpeedMultiplierOverride = 0;
 });
 
-app.controller('mainController', function($scope, config, $http) {
+app.controller('MainCtrl', function($scope, config, $http, $state) {
   config.requests.serverSpeedMultiplier = 0;
   var x = { a: [ { b:1, c:2 }, { c:3, d:4 }, { c:5, e:"test" },
                  { f: { g: 6 } },
@@ -188,17 +197,6 @@ app.controller('mainController', function($scope, config, $http) {
     };
     return getDataFromServer.then(processResponse);
   };
-
-  $scope.useCases = [
-    { title: 'All' },
-    { group: 'Admin', title: 'All' },
-    { id: 1, group: 'Admin', title: 'Create an application', notes: 'AKA add a candidate to a job',
-        demos: ['/jobs/123?add-candidate']
-    },
-    { id: 2, group: 'Admin', title: 'View a list of job applications' },
-    { id: 3, group: 'Admin', title: 'Assign a score to a candidate' }
-  ];
-
 
   var requestUrlRoot = '/admin/service/';
   $scope.requests = [
@@ -413,6 +411,20 @@ app.controller('mainController', function($scope, config, $http) {
       ]
     }
   ];
+
+  if ($state.params.requestId) {
+    $scope.request = _.find($scope.requests, function(x) { return x.url === requestUrlRoot + $state.params.requestId; });
+  }
+  if ($scope.request && $state.params.dataIndex) $scope.query = $scope.request.queries[$state.params.dataIndex];
+
+  $scope.getRequestLink = function() {
+    if (!$scope.request) return;
+    return '#/' + $scope.request.url.split('/').pop();
+  };
+  $scope.getQueryLink = function() {
+    if (!$scope.request) return;
+    return $scope.getRequestLink() + '/' + _.indexOf($scope.request.queries, $scope.query);
+  };
 });
 
 app.run(function($rootScope) {
