@@ -21,7 +21,7 @@ app.factory('teachersService', function($rootScope, $http, $q, config, listServi
     $rootScope.$broadcast('applicationsChanged');
   };
 
-  var getDataFromServer = $http.post(config.requests.urls.teachers, { statusId: 3 }, config.postConfig);
+  var getDataFromServer = $http.post(config.requests.urls.teachers, { statusId: 3 }, config.requests.postConfig);
   var setData = function(response) { o.list = new listService.List(response.data.teachers); };
   o.getAndSetData = getDataFromServer.then(setData);
 
@@ -38,7 +38,7 @@ app.factory('teacherService', function($http, $q, config) {
     var stopProcessing = function() { teacher.processing = false; };
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
-    var postToServer = $http.post(config.requests.urls.processTeacher, $.param(dataToPost), config.postConfig);
+    var postToServer = $http.post(config.requests.urls.processTeacher, $.param(dataToPost), config.requests.postConfig);
     return postToServer.then(successCallback).then(stopProcessing, error);
   };
 

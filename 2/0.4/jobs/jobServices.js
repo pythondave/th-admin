@@ -8,7 +8,7 @@ app.factory('jobsService', function($http, $rootScope, config, listService) {
   o.getAndSetData = function(dataToPost) {
     o.list.setData([]); //instantly clear current data
     o.dataPosted = dataToPost;
-    var getDataFromServer = $http.post(config.requests.urls.jobs, dataToPost, config.postConfig);
+    var getDataFromServer = $http.post(config.requests.urls.jobs, dataToPost, config.requests.postConfig);
     var setData = function(response) {
       o.list.setData(response.data.jobs);
       o.setDerivedData();
@@ -55,7 +55,7 @@ app.factory('jobService', function($http, config, listService) {
   //get data
   o.getAndSetData = function(jobId) {
     if (!jobId) return;
-    var getDataFromServer = $http.post(config.requests.urls.job, { jobId: jobId }, config.postConfig);
+    var getDataFromServer = $http.post(config.requests.urls.job, { jobId: jobId }, config.requests.postConfig);
     var setData = function(response) {
       o.job = response.data.job;
       return response;

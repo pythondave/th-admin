@@ -4,7 +4,7 @@ app.service('basicListsService', function($q, $http, config, listService) {
   //note: this runs once only since basicLists can be considered static
 
   var o = {};
-  var getDataFromServer = $http.post(config.requests.urls.basicLists, null, config.postConfig);
+  var getDataFromServer = $http.post(config.requests.urls.basicLists, null, config.requests.postConfig);
   var setData = function(response) { o.basicLists = response; };
   o.getAndSetData = function() { return getDataFromServer.then(setData); };
 

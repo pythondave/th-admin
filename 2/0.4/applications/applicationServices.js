@@ -9,7 +9,7 @@ app.factory('applicationsService', function($http, $q, $rootScope, config, appli
   //get data
   o.getAndSetData = function(dataToPost) {
     o.list.setData([]); //instantly clear current data
-    var getDataFromServer = $http.post(config.requests.urls.applications, dataToPost, config.postConfig);
+    var getDataFromServer = $http.post(config.requests.urls.applications, dataToPost, config.requests.postConfig);
     var setData = function(response) {
       o.list.setData(response.data.applications);
       o.setDerivedData();
@@ -29,7 +29,7 @@ app.factory('applicationsService', function($http, $q, $rootScope, config, appli
   };
 
   o.addApplication = function(dataToPost) {
-    var addApplicationToServer = $http.post(config.requests.urls.addApplication, dataToPost, config.postConfig);
+    var addApplicationToServer = $http.post(config.requests.urls.addApplication, dataToPost, config.requests.postConfig);
     var setLocalData = function(response) {
       o.list.data.push(response.data.application);
       o.setDerivedData();
@@ -95,7 +95,7 @@ app.factory('applicationService', function($http, $q, config) {
     var stopProcessing = function() { application.processing = false; };
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
-    var postToServer = $http.post(config.requests.urls.processApplication, $.param(dataToPost), config.postConfig);
+    var postToServer = $http.post(config.requests.urls.processApplication, $.param(dataToPost), config.requests.postConfig);
     return postToServer.then(successCallback).then(stopProcessing, error);
   };
 

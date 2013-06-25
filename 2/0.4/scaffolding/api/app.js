@@ -189,7 +189,7 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
     if (!$scope.request) return;
 
     var dataToPost = ( $scope.query ? $scope.query.dataToPost : undefined);
-    var getDataFromServer = $http.post($scope.request.url, dataToPost, config.postConfig);
+    var getDataFromServer = $http.post($scope.request.url, dataToPost, config.requests.postConfig);
     var processResponse = function(response) {
       $scope.json = response.data;
       $scope.keys = (typeof response.data === 'object' ? Object.keys(response.data) : undefined);

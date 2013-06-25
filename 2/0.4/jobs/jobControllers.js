@@ -276,7 +276,7 @@ app.controller('JobAddCandidateController', function($scope, config, dialog, $ht
 
   $scope.teachers = function(search) {
     var dataToPost = { statusId: 4, search: search, limit: 5 };
-    return $http.post(config.requests.urls.teachers, dataToPost, config.postConfig)
+    return $http.post(config.requests.urls.teachers, dataToPost, config.requests.postConfig)
                 .then(function(response){ return response.data.teachers; });
   };
 });
