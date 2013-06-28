@@ -27,10 +27,10 @@
         <img ng-show="t.processing" src="http://img.cdn.tl/loading1.gif" />
       </td>
       <td>
-        <button class="btn btn-success btn-small" ng-click="process(t, 4)" ng-disabled="t.processing">Approve</button>
+        <button class="btn btn-success btn-small" ng-click="process(t, 1)" ng-disabled="t.processing">Approve</button>
       </td>
       <td>
-        <button class="btn btn-danger btn-small" ng-click="process(t, 5)" ng-disabled="t.processing">Decline</button>
+        <button class="btn btn-danger btn-small" ng-click="process(t, -1)" ng-disabled="t.processing">Decline</button>
       </td>
     </tr>
   </tbody>

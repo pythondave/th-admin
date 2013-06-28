@@ -48,11 +48,11 @@ app.factory('teacherService', function($http, $q, config) {
 app.factory('teacherStatusesService', function() {
   var o = {};
   o.statuses = {
-    1: { title: 'Joined', shortTitle: 'J' },
+    0: { title: 'Joined', shortTitle: 'J' },
     2: { title: '80% Complete', shortTitle: '80%' },
     3: { title: 'Pending Approval', shortTitle: 'PA' },
-    4: { title: 'Approved', shortTitle: 'A', alertType: 'success' },
-    5: { title: 'Declined', shortTitle: 'D', alertType: 'error' }
+    1: { title: 'Approved', shortTitle: 'A', alertType: 'success' },
+    "-1": { title: 'Declined', shortTitle: 'D', alertType: 'error' }
   };
   return o;
 });

@@ -211,16 +211,20 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
           description: 'Teachers pending approval - i.e. candidates to review'
         },
         {
-          dataToPost: { search: 't', statusId: 4, limit: 5 },
-          description: 'Teachers matching "t" who have statusId 4 (approved)'
+          dataToPost: { search: 't', statusId: 1, limit: 5 },
+          description: 'Teachers matching "t" who have statusId 1 (approved)'
         },
         {
-          dataToPost: { search: 'te', statusId: 4, limit: 5 },
-          description: 'Teachers matching "te" who have statusId 4 (approved)'
+          dataToPost: { search: 'te', statusId: 1, limit: 5 },
+          description: 'Teachers matching "te" who have statusId 1 (approved)'
         },
         {
-          dataToPost: { search: 'ter', statusId: 4, limit: 5 },
-          description: 'Teachers matching "ter" who have statusId 4 (approved)'
+          dataToPost: { search: 'ter', statusId: 1, limit: 5 },
+          description: 'Teachers matching "ter" who have statusId 1 (approved)'
+        },
+        {
+          dataToPost: { search: 'te', statusId: 1, limit: 5, exclude: { jobId: 123 } },
+          description: 'Teachers matching "te" who have statusId 1 (approved) but who are not associated with jobId 123'
         }
       ]
     },
@@ -231,11 +235,11 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
       sprintAdded: 1, sprintLastUpdated: 2,
       queries: [
         {
-          dataToPost: { teacherId: 123, statusId: 4 },
+          dataToPost: { teacherId: 123, statusId: 1 },
           description: 'Change the status of a teacher to "Approved"'
         },
         {
-          dataToPost: { teacherId: 123, statusId: 5 },
+          dataToPost: { teacherId: 123, statusId: -1 },
           description: 'Change the status of a teacher to "Declined"'
         },
         {
@@ -355,11 +359,11 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
         {
           dataToPost: { applicationId: 123, statusId: 123 },
           description: 'Changes the status of an application'
-        },
+        } /*, TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
         {
           dataToPost: { applicationId: 123, statusId: 123, message: 'This is a message...' },
           description: 'Changes the status of an application and sends the message'
-        }
+        } */
       ]
     },
     {

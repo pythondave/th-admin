@@ -178,10 +178,10 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, jobService, ap
     $scope.debounceFunction();
   };
 
-  $scope.processStatusChange = function(application, statusId, statusChangeMessage) {
+  $scope.processStatusChange = function(application, statusId) { //, statusChangeMessage  TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
     //*** TODO: move some of this up to one or more services (e.g. applicationService and/or applicationStatusesService)
     var dataToPost = { statusId: statusId };
-    if (statusChangeMessage) dataToPost.message = statusChangeMessage;
+    //if (statusChangeMessage) dataToPost.message = statusChangeMessage;  TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
     var process = applicationService.process(application, dataToPost); //promise
 
     //retrieve status change info from service; *** TODO: consider whether the newer applicationService is a better place for this now
@@ -226,12 +226,12 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, jobService, ap
     if (application.statusId === newStatus.id) return;
 
     var opts = { backdrop: true, keyboard: true, backdropFade: true, backdropClick: false };
-    opts = _.extend(opts, { templateUrl: 'jobs/job/changeApplicationStatus.html?b', controller: 'changeApplicationStatusController' });
+    opts = _.extend(opts, { templateUrl: 'jobs/job/changeApplicationStatus.html?c', controller: 'changeApplicationStatusController' });
 
     var afterClose = function(response) {
       if (!response || !response.doIt) return;
-      var message = (response.sendMessage ? response.message : undefined );
-      $scope.processStatusChange(application, applicationStatusesService.newStatus.id, message);
+      //var message = (response.sendMessage ? response.message : undefined );  TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
+      $scope.processStatusChange(application, applicationStatusesService.newStatus.id); //, message  TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
     };
 
     $dialog.dialog(opts).open().then(afterClose);
@@ -247,22 +247,26 @@ app.controller('changeApplicationStatusController', function($scope, dialog, app
   $scope.currentStatus = applicationStatusesService.currentStatus;
   $scope.statusChangeType = applicationStatusesService.statusChangeType;
 
+  /* TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
   //set message (get the template)
   var setMessage = function() {
     var fullName = $scope.application.teacher.fullName;
     $scope.message = settingService.replacePlaceholder(settingService.value, 'fullName', fullName);
   };
   settingService.getAndSetData($scope.newStatus.messageTemplate).then(setMessage);
+  */
 
   $scope.close = function(doIt) {
     var o = { doIt: doIt };
+    /* TEMPORARY HIDE - see https://github.com/pythondave/th-admin/issues/6
     if (doIt) o.sendMessage = $scope.sendMessage;
     if (doIt && o.sendMessage) o.message = $scope.message;
+    */
     dialog.close(o);
   };
 });
 
-app.controller('JobAddCandidateController', function($scope, config, dialog, $http, limitToFilter){
+app.controller('JobAddCandidateController', function($scope, config, dialog, $http, $stateParams){
   $scope.close = function(doIt) {
     var o = { doIt: doIt, teacher: $scope.teacher };
     dialog.close(o);
@@ -275,7 +279,7 @@ app.controller('JobAddCandidateController', function($scope, config, dialog, $ht
   });
 
   $scope.teachers = function(search) {
-    var dataToPost = { statusId: 4, search: search, limit: 5 };
+    var dataToPost = { statusId: 4, search: search, limit: 5, exclude: { jobId: $stateParams.jobId } };
     return $http.post(config.requests.urls.teachers, dataToPost, config.requests.postConfig)
                 .then(function(response){ return response.data.teachers; });
   };
