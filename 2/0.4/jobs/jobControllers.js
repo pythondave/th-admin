@@ -279,7 +279,7 @@ app.controller('JobAddCandidateController', function($scope, config, dialog, $ht
   });
 
   $scope.teachers = function(search) {
-    var dataToPost = { statusId: 4, search: search, limit: 5, exclude: { jobId: $stateParams.jobId } };
+    var dataToPost = { statusId: 1, search: search, limit: 5, exclude: { jobId: $stateParams.jobId } };
     return $http.post(config.requests.urls.teachers, dataToPost, config.requests.postConfig)
                 .then(function(response){ return response.data.teachers; });
   };

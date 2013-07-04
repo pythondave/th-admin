@@ -1,6 +1,6 @@
 var app = angular.module('app', ['ui.bootstrap', 'ngMockE2E', 'ngResource', 'ui.compat']);
 
-app.config(function($stateProvider) {
+app.config(function($stateProvider, $httpProvider) {
   var mainView = { 'container-main': { templateUrl: 'main.html', controller: 'MainCtrl' } };
 
   $stateProvider

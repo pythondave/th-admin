@@ -1,3 +1,11 @@
+app.config(function($httpProvider) {
+  $httpProvider.defaults.transformRequest = function(data) { //see https://github.com/pythondave/th-admin/issues/11
+    var actualRequestData = (data === undefined ? undefined : $.param(data));
+    //console.log(data, actualRequestData);
+    return actualRequestData;
+  };
+});
+
 app.value('config', function() {
   var o = {};
 

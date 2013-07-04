@@ -1,6 +1,6 @@
 app.factory('schoolNamesService', function($http, config, listService) {
   var o = {};
-  var getDataFromServer = $http.post(config.requests.urls.schoolNames, null, config.requests.postConfig);
+  var getDataFromServer = $http.post(config.requests.urls.schoolNames, undefined, config.requests.postConfig);
   o.list = new listService.List();
 
   //get data

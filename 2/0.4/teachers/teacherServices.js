@@ -38,7 +38,7 @@ app.factory('teacherService', function($http, $q, config) {
     var stopProcessing = function() { teacher.processing = false; };
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
-    var postToServer = $http.post(config.requests.urls.processTeacher, $.param(dataToPost), config.requests.postConfig);
+    var postToServer = $http.post(config.requests.urls.processTeacher, dataToPost, config.requests.postConfig);
     return postToServer.then(successCallback).then(stopProcessing, error);
   };
 

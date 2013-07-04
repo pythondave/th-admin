@@ -14,7 +14,7 @@ app.factory('settingService', function($http, $q, config) {
 
   //process
   o.process = function(dataToPost) { //returns a promise
-    var postToServer = $http.post(config.requests.urls.processSetting, $.param(dataToPost), config.requests.postConfig);
+    var postToServer = $http.post(config.requests.urls.processSetting, dataToPost, config.requests.postConfig);
     var getResponse = function(response) { }; //do something here if needed
     return postToServer.then(getResponse);
   };

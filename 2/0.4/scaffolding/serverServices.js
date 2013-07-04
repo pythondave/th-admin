@@ -246,6 +246,17 @@ app.factory('randomDataService', function(serverListsService) {
   return o;
 });
 
+var deserializeParams = function(p){ //see https://github.com/pythondave/th-admin/issues/11
+  if (p === undefined) return {};
+  var o = {}, seg = p.replace(/^\?/,'').split('&'), len = seg.length, i = 0, s;
+  for (;i<len;i++) {
+    if (!seg[i]) { continue; }
+    s = seg[i].split('=');
+    o[s[0]] = s[1];
+  }
+  return o;
+};
+
 //set dummy server responses to posts and gets
 app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, randomDataService) {
   //note: $httpBackend requests are at the bottom
@@ -255,11 +266,11 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
   //teachers
   var teachersResponse = function(method, url, data, headers) {
     var teachers;
-    var params = (data ? JSON.parse(data) : {});
-    if (params.statusId === 3) { //teachers pending approval
+    var params = deserializeParams(data);
+    if (params.statusId === '3') { //teachers pending approval
       teachers = randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullName', 'profileUrl'], length: randomDataService.getRandomInteger(0, 100) });
     }
-    if (params.search && params.statusId === 4) { //search approved teachers
+    if (params.search && params.statusId === '1') { //search approved teachers
       params.limit = params.limit || 5;
       teachers = [];
       var re = new RegExp(params.search, 'i');
@@ -281,7 +292,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
   var jobProperties = ['id', 'dateCreated', 'subject', 'role', 'schoolName', 'country', 'numApplied', 'numPutForward', 'numShortlisted', 'numInterviewed', 'numOffersMade', 'isAccepted', 'numRejected'];
   var jobsResponse = function(method, url, data, headers) {
     //params
-    var params = (data ? JSON.parse(data) : {});
+    var params = deserializeParams(data);
     delete params.type; //ignore for mock purposes (for now) as this only affects a few data values (and not size/structure)
     var paramCount = _.keys(params).length;
     var length;
@@ -309,8 +320,8 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
   //applications
   var applicationsResponse = function(method, url, data, headers) {
     var applications;
-    var params = (data ? JSON.parse(data) : {});
-    if (params.statusId === 1) {
+    var params = deserializeParams(data);
+    if (params.statusId === '1') {
       applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplicationForStatusId1, length: randomDataService.getRandomInteger(0, 100) });
     }
     if (params.jobId) {
@@ -327,7 +338,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
 
   //settings
   var settingResponse = function(method, url, data, headers) {
-    var params = (data ? JSON.parse(data) : {});
+    var params = deserializeParams(data);
     var value = 'Dear [[fullName]],\n\n' +
       '(Template for "' + params.settingName + '")\n\n' +
       randomDataService.getRandomParagraph() + '\n\n' +
@@ -337,7 +348,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
     return [200, setting];
   };
   var messageTemplateResponse = function(method, url, data, headers) {
-    var params = (data ? JSON.parse(data) : {});
+    var params = deserializeParams(data);
     var text = 'Dear [[fullName]],\n\n' +
       '(Template for "' + params.type + '")\n\n' +
       randomDataService.getRandomParagraph() + '\n\n' +

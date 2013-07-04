@@ -95,7 +95,7 @@ app.factory('applicationService', function($http, $q, config) {
     var stopProcessing = function() { application.processing = false; };
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
-    var postToServer = $http.post(config.requests.urls.processApplication, $.param(dataToPost), config.requests.postConfig);
+    var postToServer = $http.post(config.requests.urls.processApplication, dataToPost, config.requests.postConfig);
     return postToServer.then(successCallback).then(stopProcessing, error);
   };
 
