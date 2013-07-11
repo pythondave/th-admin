@@ -131,7 +131,6 @@ app.config(function($httpProvider) {
         return successResponse;
       }, function(errorResponse, b, c) {
         if (errorResponse && errorResponse.status === 401) {
-          console.log('responseInterceptor - ERROR', errorResponse.status, configService.loginUrl);
           document.location.href = configService.loginUrl;
         }
         return $q.reject(errorResponse);

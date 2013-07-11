@@ -200,7 +200,7 @@ app.controller('MainCtrl', function($scope, configService, $http, $state) {
       _.assign($scope, summariseObject2(response.data));
     };
     var error = function(response) {
-      if (response[0] === 401) $scope.requestUnauthorized = true;
+      if (response && response.status === 401) $scope.requestUnauthorized = true;
     };
     return getDataFromServer.then(processResponse, error);
   };
@@ -492,5 +492,13 @@ app.run(function($rootScope) {
 app.filter('param', function() {
   return function(input) {
     return (input === undefined ? undefined : $.param(input));
+  };
+});
+
+//configure $httpProvider
+app.config(function($httpProvider) {
+  $httpProvider.defaults.transformRequest = function(data) { //see https://github.com/pythondave/th-admin/issues/11
+    var actualRequestData = (data === undefined ? undefined : $.param(data));
+    return actualRequestData;
   };
 });
