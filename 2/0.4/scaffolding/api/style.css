@@ -1,8 +1,9 @@
 body { margin: 40px; }
 .field { min-height: 28px; font-size: 12px; line-height: 16px; }
-.field-label { display: block; float: left; width: 130px; font-weight: bold; }
+.field-label { display: block; float: left; width: 140px; font-weight: bold; }
 .field-value { display: inline-block; width: 500px; clear: both; font-size: 12px; }
 .nav-tabs>li { cursor: pointer; }
-.btn-request { position: absolute; left: 590px; }
+.btn-request { position: absolute; left: 600px; }
 .tabs { margin-top: 20px; }
 select { margin-top: -5px; }
+.light { color: silver;}

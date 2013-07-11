@@ -31,13 +31,15 @@ app.directive('simpleTooltip', function ($compile) {
         return o;
       };
       var addTooltip = function () {
-        var attr = $element.attr('simple-tooltip');
-        var options = (attr.charAt(0)==='{' ? $parse(attr)() : { text: attr, placement: 'top', 'class': '' });
+        var text = $element.attr('simple-tooltip');
+        var attrOptions = $element.attr('simple-tooltip-options');
+        var options = (attrOptions ? $parse(attrOptions)() : { placement: 'top', 'class': '' });
+
         if (!c) { //only need to create it once
-          if (!options.text) return;
-          options.text = options.text.replace(/\n/gi, '<br/>');
+          if (!text) return;
+          text = text.replace(/\n/gi, '<br/>');
           options.heading = (options.heading ? '<span class="heading">' + options.heading + '</span><hr/>' : '');
-          var html = '<div class="tooltip ' + options.placement + ' ' + options['class'] + ' in" style="white-space: normal"><div class="tooltip-arrow"></div><div class="tooltip-inner">' + options.heading + options.text + '</div></div>';
+          var html = '<div class="tooltip ' + options.placement + ' ' + options['class'] + ' in" style="white-space: normal"><div class="tooltip-arrow"></div><div class="tooltip-inner">' + options.heading + text + '</div></div>';
           c = $compile(html)($scope);
           $element.prepend(c);
         }

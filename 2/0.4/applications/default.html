@@ -46,8 +46,8 @@
     <tr ng-repeat="a in applications" ng-class-odd="'tr-odd'" ng-class-even="'tr-even'">
       <td class="td-left">
         <a ng-href="{{a.teacher.profileUrl}}" target="_blank">{{a.teacher.fullName}}</a>
-        <span simple-tooltip="{ text:'{{a.coverMessage}}', placement: 'right', class: 'tooltip-wide', heading: 'Cover Message' }" class="point">
-          <i ng-show="a.coverMessage" class="icon-comment"></i>
+        <span simple-tooltip="{{a.coverMessage}}" simple-tooltip-options="{ placement: 'right', class: 'tooltip-wide', heading: 'Cover Message' }" class="point">
+          <i ng-show="!!a.coverMessage" class="icon-comment"></i>
         </span>
         <span simple-tooltip="Applied {{a.dateApplied | date:'EEE dd MMM yyyy h:mma'}}" ng-show="a.daysSinceApplied < 3" class="new">new<span>
       </td>

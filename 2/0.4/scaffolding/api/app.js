@@ -9,12 +9,15 @@ app.config(function($stateProvider, $httpProvider) {
     .state('query', { url: '/:requestId/:dataIndex', views: mainView });
 });
 
-app.run(function(config) {
-  config.serverSpeedMultiplierOverride = 0;
+app.run(function(configService) {
+  configService.serverSpeedMultiplierOverride = 0;
 });
 
-app.controller('MainCtrl', function($scope, config, $http, $state) {
-  config.requests.serverSpeedMultiplier = 0;
+app.controller('MainCtrl', function($scope, configService, $http, $state) {
+  configService.requests.serverSpeedMultiplier = 0;
+  $scope.userIsLoggedIn = true;
+  $scope.$watch('userIsLoggedIn', function(newValue) { configService.user.isLoggedIn = newValue; });
+
   var x = { a: [ { b:1, c:2 }, { c:3, d:4 }, { c:5, e:"test" },
                  { f: { g: 6 } },
                  { f: { g: 7, h: 8 } } //, 9, 's' => for later
@@ -185,17 +188,21 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
   _.assign($scope, summariseObject2(x));
 
   $scope.processRequest = function() {
+    $scope.requestUnauthorized = false;
     $scope.json = undefined;
     if (!$scope.request) return;
 
     var dataToPost = ( $scope.query ? $scope.query.dataToPost : undefined);
-    var getDataFromServer = $http.post($scope.request.url, dataToPost, config.requests.postConfig);
+    var getDataFromServer = $http.post($scope.request.url, dataToPost, configService.requests.postConfig);
     var processResponse = function(response) {
       $scope.json = response.data;
       $scope.keys = (typeof response.data === 'object' ? Object.keys(response.data) : undefined);
       _.assign($scope, summariseObject2(response.data));
     };
-    return getDataFromServer.then(processResponse);
+    var error = function(response) {
+      if (response[0] === 401) $scope.requestUnauthorized = true;
+    };
+    return getDataFromServer.then(processResponse, error);
   };
 
   var requestUrlRoot = '/admin/service/';
@@ -207,23 +214,23 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
       sprintAdded: 1, sprintLastUpdated: 2,
       queries: [
         {
-          dataToPost: { statusId: 3 },
+          dataToPost: { statusIds: "3" },
           description: 'Teachers pending approval - i.e. candidates to review'
         },
         {
-          dataToPost: { search: 't', statusId: 1, limit: 5 },
+          dataToPost: { search: 't', statusIds: "1", limit: 5 },
           description: 'Teachers matching "t" who have statusId 1 (approved)'
         },
         {
-          dataToPost: { search: 'te', statusId: 1, limit: 5 },
+          dataToPost: { search: 'te', statusIds: "1", limit: 5 },
           description: 'Teachers matching "te" who have statusId 1 (approved)'
         },
         {
-          dataToPost: { search: 'ter', statusId: 1, limit: 5 },
+          dataToPost: { search: 'ter', statusIds: "1", limit: 5 },
           description: 'Teachers matching "ter" who have statusId 1 (approved)'
         },
         {
-          dataToPost: { search: 'te', statusId: 1, limit: 5, exclude: { jobId: 123 } },
+          dataToPost: { search: 'te', statusIds: "1", limit: 5, excludeJobId: 123 },
           description: 'Teachers matching "te" who have statusId 1 (approved) but who are not associated with jobId 123'
         }
       ]
@@ -328,11 +335,11 @@ app.controller('MainCtrl', function($scope, config, $http, $state) {
       sprintAdded: 2, sprintLastUpdated: 2,
       queries: [
         {
-          dataToPost: { statusId: 1 },
+          dataToPost: { statusIds: "1" },
           description: 'All applications whose status is "applied" (i.e. not yet put forward or declined)'
         },
         {
-          dataToPost: { jobId: 123,  statusIds: [2, 4, 5, 6, 7, 8] },
+          dataToPost: { jobId: 123,  statusIds: "2,4,5,6,7,8" },
           description: 'All applications for a job where the statusId is in the list'
         }
       ]
@@ -480,4 +487,10 @@ app.run(function($rootScope) {
     },
     firstDefined: function() { return _.find(arguments, function(x) { return !_.isUndefined(x); }); }
   });
+});
+
+app.filter('param', function() {
+  return function(input) {
+    return (input === undefined ? undefined : $.param(input));
+  };
 });

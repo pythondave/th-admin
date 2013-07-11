@@ -127,7 +127,7 @@ app.controller('JobMenuCtrl', function($scope, $timeout, $window, $dialog, $stat
 });
 
 app.controller('JobCtrl', function($scope, $stateParams, $dialog, jobService, applicationsService, applicationService, scoresService, applicationStatusesService, alertService, teacherService) {
-  applicationsService.getAndSetData({ jobId: $stateParams.jobId, statusIds: [2, 4, 5, 6, 7, 8] });
+  applicationsService.getAndSetData({ jobId: $stateParams.jobId, statusIds: "2,4,5,6,7,8" });
 
 
   applicationsService.list.setSortOrderPaths(['-datePutForward', 'teacher.fullName']);
@@ -266,7 +266,7 @@ app.controller('changeApplicationStatusController', function($scope, dialog, app
   };
 });
 
-app.controller('JobAddCandidateController', function($scope, config, dialog, $http, $stateParams){
+app.controller('JobAddCandidateController', function($scope, configService, dialog, $http, $stateParams){
   $scope.close = function(doIt) {
     var o = { doIt: doIt, teacher: $scope.teacher };
     dialog.close(o);
@@ -279,8 +279,8 @@ app.controller('JobAddCandidateController', function($scope, config, dialog, $ht
   });
 
   $scope.teachers = function(search) {
-    var dataToPost = { statusId: 1, search: search, limit: 5, exclude: { jobId: $stateParams.jobId } };
-    return $http.post(config.requests.urls.teachers, dataToPost, config.requests.postConfig)
+    var dataToPost = { statusIds: '1', search: search, limit: 5, excludeJobId: $stateParams.jobId };
+    return $http.post(configService.requests.urls.teachers, dataToPost, configService.requests.postConfig)
                 .then(function(response){ return response.data.teachers; });
   };
 });

@@ -1,10 +1,10 @@
 //*** TODO - refactor (there's a lot of duplication here)
 
-app.service('basicListsService', function($q, $http, config, listService) {
+app.service('basicListsService', function($q, $http, configService, listService) {
   //note: this runs once only since basicLists can be considered static
 
   var o = {};
-  var getDataFromServer = $http.post(config.requests.urls.basicLists, undefined, config.requests.postConfig);
+  var getDataFromServer = $http.post(configService.requests.urls.basicLists, undefined, configService.requests.postConfig);
   var setData = function(response) { o.basicLists = response; };
   o.getAndSetData = function() { return getDataFromServer.then(setData); };
 

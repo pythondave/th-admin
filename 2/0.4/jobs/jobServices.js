@@ -1,4 +1,4 @@
-app.factory('jobsService', function($http, $rootScope, config, listService) {
+app.factory('jobsService', function($http, $rootScope, configService, listService) {
   //initialise
   var o = {};
   o.list = new listService.List();
@@ -8,7 +8,8 @@ app.factory('jobsService', function($http, $rootScope, config, listService) {
   o.getAndSetData = function(dataToPost) {
     o.list.setData([]); //instantly clear current data
     o.dataPosted = dataToPost;
-    var getDataFromServer = $http.post(config.requests.urls.jobs, dataToPost, config.requests.postConfig);
+
+    var getDataFromServer = $http.post(configService.requests.urls.jobs, dataToPost, configService.requests.postConfig);
     var setData = function(response) {
       o.list.setData(response.data.jobs);
       o.setDerivedData();
@@ -48,14 +49,14 @@ app.factory('jobsService', function($http, $rootScope, config, listService) {
   return o;
 });
 
-app.factory('jobService', function($http, config, listService) {
+app.factory('jobService', function($http, configService, listService) {
   //initialise
   var o = {};
 
   //get data
-  o.getAndSetData = function(jobId) {
-    if (!jobId) return;
-    var getDataFromServer = $http.post(config.requests.urls.job, { jobId: jobId }, config.requests.postConfig);
+  o.getAndSetData = function(dataToPost) {
+    if (!dataToPost.jobId) return;
+    var getDataFromServer = $http.post(configService.requests.urls.job, dataToPost, configService.requests.postConfig);
     var setData = function(response) {
       o.job = response.data.job;
       return response;

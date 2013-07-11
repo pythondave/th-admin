@@ -27,7 +27,7 @@ app.factory('FilterService', function() { //returns a constructor function
   o.refreshRefine = function(filter, refineList) {
     if (filter.val && filter.val.type === 'Refine') filter.val = undefined; //remove if filter is a refine
     o.removeRefine(filter);
-    o.addRefine(filter, refineList);
+    if (!(filter.val && filter.val.type === 'Search')) o.addRefine(filter, refineList); //add if search filter not selected
   };
 
   o.addSearch = function(filter, searchList) {

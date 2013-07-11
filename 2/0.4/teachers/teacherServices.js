@@ -1,4 +1,4 @@
-app.factory('teachersService', function($rootScope, $http, $q, config, listService, teacherService) {
+app.factory('teachersService', function($rootScope, $http, $q, configService, listService, teacherService) {
   var o = {};
 
   o.process = function(teacher, dataToPost) { //returns a promise
@@ -21,14 +21,14 @@ app.factory('teachersService', function($rootScope, $http, $q, config, listServi
     $rootScope.$broadcast('applicationsChanged');
   };
 
-  var getDataFromServer = $http.post(config.requests.urls.teachers, { statusId: 3 }, config.requests.postConfig);
+  var getDataFromServer = $http.post(configService.requests.urls.teachers, { statusIds: '3' }, configService.requests.postConfig);
   var setData = function(response) { o.list = new listService.List(response.data.teachers); };
   o.getAndSetData = getDataFromServer.then(setData);
 
   return o;
 });
 
-app.factory('teacherService', function($http, $q, config) {
+app.factory('teacherService', function($http, $q, configService) {
   var o = {};
 
   o.process = function(teacher, dataToPost, successCallback) { //returns a promise
@@ -38,7 +38,7 @@ app.factory('teacherService', function($http, $q, config) {
     var stopProcessing = function() { teacher.processing = false; };
     var error = function() { stopProcessing(); return $q.reject(); }; //re-throw any server error
 
-    var postToServer = $http.post(config.requests.urls.processTeacher, dataToPost, config.requests.postConfig);
+    var postToServer = $http.post(configService.requests.urls.processTeacher, dataToPost, configService.requests.postConfig);
     return postToServer.then(successCallback).then(stopProcessing, error);
   };
 

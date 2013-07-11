@@ -3,10 +3,10 @@
 //In theory it acts as the server in the absence of the server. It is a mock server.
 // *** ********* ***
 
-app.factory('delayResponseInterceptor', function($q, $timeout, config) {
+app.factory('delayResponseInterceptor', function($q, $timeout, configService) {
   //Can be used to delay all mock responses by a typical (and occasionally atypical) random amount, or fail entirely at a certain rate
-  var serverSpeedMultiplier = _.firstDefined(config.serverSpeedMultiplierOverride, config.requests.serverSpeedMultiplier, 1); //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
-  config.local = { //configure special values for particular requests here
+  var serverSpeedMultiplier = _.firstDefined(configService.serverSpeedMultiplierOverride, configService.requests.serverSpeedMultiplier, 1); //reduce during dev so things work faster (say 0.2), increase (to say 1) when demoing
+  configService.local = { //configure special values for particular requests here
     //delayLengthMultiplier: standard random server response delay will be multiplied by this (e.g. for requests which are normally longer, say)
     //errorRate: 0: no errors; 1 error every time;
     logRequestsToConsole: false, //change to true to monitor server requests in the console window
@@ -16,10 +16,10 @@ app.factory('delayResponseInterceptor', function($q, $timeout, config) {
     '/admin/service/process-application': { delayLengthMultiplier: 4, errorRate: 0.05 }
   };
   var getConfigValue = function(requestUrl, attributeName, defaultValue) { //use to ease the process of getting config values
-    defaultValue = defaultValue || config.local.attributeDefaults[attributeName];
-    if (!config.local[requestUrl]) return defaultValue;
-    if (!config.local[requestUrl][attributeName]) return defaultValue;
-    return config.local[requestUrl][attributeName];
+    defaultValue = defaultValue || configService.local.attributeDefaults[attributeName];
+    if (!configService.local[requestUrl]) return defaultValue;
+    if (!configService.local[requestUrl][attributeName]) return defaultValue;
+    return configService.local[requestUrl][attributeName];
   };
   var randomLogNormalValue = function(mu, sigma) { //server responses can be roughly modelled by a lognormal distribution
     var z1 = Math.sqrt(-2 * Math.log(1.0 - Math.random())) * Math.sin(2 * Math.PI * Math.random());
@@ -51,7 +51,7 @@ app.factory('delayResponseInterceptor', function($q, $timeout, config) {
     //note that we need to resolve the httpRequest twice - once to get the url (to get related config values), and then again after the delay
     var responseInfo;
     var getResponseInfo = function(response) {
-      if (config.local.logRequestsToConsole && response.config.method === 'POST') {
+      if (configService.local.logRequestsToConsole && response.config.method === 'POST') {
         console.log('SERVER REQUEST: ', response.config.url, 'PARAMS: ', response.config.data);
       }
       responseInfo = response;
@@ -62,6 +62,15 @@ app.factory('delayResponseInterceptor', function($q, $timeout, config) {
       return delay(delayLength);
     };
     var getHttpRequest = function() {
+      var isHtmlPage = /.html$/.test(responseInfo.config.url);
+      var isWhitelisted = isHtmlPage;
+
+      if (!isWhitelisted) { //need to check log in
+        if (!configService.user.isLoggedIn) {
+          var response = { status: 401 };
+          return $q.reject(response);
+        } //401 error if not logged in
+      }
       var errorRate = getConfigValue(responseInfo.config.url, 'errorRate');
       if (Math.random() < errorRate) { return $q.reject(); } //randomly error according to the errorRate
       return httpRequest;
@@ -77,7 +86,13 @@ app.config(function($httpProvider) {
   $httpProvider.responseInterceptors.unshift('delayResponseInterceptor');
 });
 
-app.factory('serverListsService', function() {
+app.factory('serverListsService', function(configService) {
+  configService.user.isLoggedIn = true; // user logged in to the mock server by default;
+
+  /* To log the server out of the mock server, open the browser console and run this code:
+    angular.element('html').injector().get('configService').user.isLoggedIn = false;
+  */
+
   var o = {};
   o.forenames = ['Terry', 'Terry', 'Terrance', 'Stern', 'Asterix', 'Abbie', 'Adele','Adelina','Alberta','Ali','Aliza','Alleen','Anastacia','Angelic','Angelo','Apryl','Ardelle','Arianna','Arianne','Ashlyn','Assunta','Bari','Belkis','Bell','Bobbi','Brianna','Britta','Brittney','Candice','Candyce','Carlota','Carmen','Celesta','Celia','Chrissy','Christena','Claire','Cristie','Cythia','Dario','Darline','Darren','Dave','Davis','Dawn','Daysi','Deanne','Debi','Denese','Dennise','Dewitt','Diedra','Dillon','Domenica','Eboni','Ellena','Elmo','Elvina','Emma','Emmanuel','Erminia','Ernestina','Flossie','Frances','Francoise','Fredrick','Garnet','Gilbert','Gilda','Gloria','Hershel','Imogene','Ina','Inge','Isabell','Isidro','Janine','Jarred','Javier','Jeanene','Jeanine','Jennell','Jennifer','Jin','Joanna','Joe','Joetta','Johnathon','Jolene','Joni','Jude','Justa','Karen','Kathleen','Kathline','Katlyn','Keeley','Kellie','Kenneth','Kerstin','Kimbery','Kirstin','Kristofer','Kyung','Lael','Lamonica','Lavette','Les','Lessie','Lindsey','Lisabeth','Lissa','Luigi','Lyle','Lynn','Lynsey','Malia','Malika','Manuel','Marcie','Marian','Mariann','Marianna','Marie','Mariela','Marine','Marisol','Marissa','Marquerite','Marvin','Maryann','Mathilde','Mee','Millie','Minnie','Mitch','Mohammed','Mohamed','Mohammad','Mohamad','Myrtie','Natashia','Natisha','Nilsa','Nina','Novella','Ollie','Oneida','Orlando','Pamila','Paul','Penelope','Phoebe','Phung','Rashad','Ray','Reanna','Rebbecca','Reinaldo','Renee','Rex','Rodolfo','Rory','Roselle','Rosemarie','Rosina','Roxanne','Rozella','Rudolph','Sanda','Sanjuana','Savannah','Seema','Shad','Sheba','Shemeka','Sherita','Sherlyn','Sherrie','Shon','Skye','Stephnie','Susann','Suzanne','Tari','Tawnya','Tiffanie','Tora','Tosha','Tuan','Ulrike','Ulysses','Valeria','Valery','Vannessa','Wendy','Wilbert','Wilton','Winifred','Yi','Yolanda','Yolando','Zelda','Zenobia','Zola'];
   o.surnames = ['Terrance', 'Abdallah', 'Abernethy','Alire','Allmond','Amezcua','Anaya','Antunez','Artrip','Arvie','Aust','Balliet','Barber','Berggren','Bezio','Bickley','Birkholz','Blakley','Bochenek','Bonin','Bosh','Bouska','Bowser','Brennen','Bruder','Bryne','Bunyard','Cafferty','Camp','Campos','Cannon','Carballo','Chaisson','Chapin','Cheatham','Ciotti','Clarke','Clendenin','Coloma','Courville','Crick','Cutler','Dahlke','Dally','Dangelo','Davey','Dearmond','Defalco','Delman','Derby','Domingo','Domingues','Dorfman','Draves','Drinnon','Dubiel','Easterwood','Ely','Entwistle','Evers','Febus','Fiorini','Florentino','Fromm','Ginder','Glennon','Glidewell','Godsey','Greenfield','Guidroz','Hail','Haner','Harju','Harman','Harvison','Hathcock','Hayek','Helwig','Henneman','Herdon','Hiner','Holbert','Holding','Hollie','Housley','Hudnall','Hund','Imhoff','Jessie','Judkins','Kenan','Kilbane','Kissner','Knoles','Koen','Kornfeld','Kral','Kromer','Kuhlman','Laber','Lally','Leard','Lease','Leedy','Lennox','Line','Linzy','Llanes','Lobo','Longwell','Lucas','Lunn','Maine','Manthe','Mcgarrah','Meinhardt','Millington','Mohammed','Mohamed','Mohammad','Mohamad','Molino','Naab','Nakamura','Nass','Ory','Parodi','Paschall','Pasquale','Pautz','Paz','Peralta','Persaud','Pfarr','Piccolo','Piscitelli','Pond','Prophet','Ram','Ranallo','Raya','Redfield','Reinert','Remillard','Revelle','Risko','Ritzer','Rochin','Rodriques','Rush','Saltz','Scalia','Schow','Seyfried','Seyler','Shiner','Showman','Slinkard','Smiley','Snay','Solie','Stclaire','Steenbergen','Steier','Steptoe','Stiger','Strine','Stutler','Sugarman','Sykora','Tallon','Tarpley','Taveras','Tee','Tepper','Timlin','Tomlinson','Touchton','Tower','Tubman','Ulmer','Underdahl','Vanduzer','Vannest','Vanscyoc','Vanwagenen','Vierling','Vitale','Wainscott','Wasserman','Weatherman','Weidenbach','Weinmann','Well','Whitchurch','Wigton','Witek','Woodfin','Wray','Yu','Ziemann'];
@@ -87,7 +102,11 @@ app.factory('serverListsService', function() {
   //o.countries = ['United States','United Kingdom','Afghanistan','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antarctica','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Bouvet Island','Brazil','British Indian Ocean Territory','Brunei Darussalam','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Cape Verde','Cayman Islands','Central African Republic','Chad','Chile','China','Christmas Island','Cocos (Keeling) Islands','Colombia','Comoros','Congo','Congo, The Democratic Republic of The','Cook Islands','Costa Rica','Cote Divoire','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea','Estonia','Ethiopia','Falkland Islands (Malvinas)','Faroe Islands','Fiji','Finland','France','French Guiana','French Polynesia','French Southern Territories','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Greenland','Grenada','Guadeloupe','Guam','Guatemala','Guinea','Guinea-bissau','Guyana','Haiti','Heard Island and Mcdonald Islands','Holy See (Vatican City State)','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran, Islamic Republic of','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kiribati','Korea, Democratic People Republic of','Korea, Republic of','Kuwait','Kyrgyzstan','Lao People Democratic Republic','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macao','Macedonia, The Former Yugoslav Republic of','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Martinique','Mauritania','Mauritius','Mayotte','Mexico','Micronesia, Federated States of','Moldova, Republic of','Monaco','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','Niue','Norfolk Island','Northern Mariana Islands','Norway','Oman','Pakistan','Palau','Palestinian Territory, Occupied','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Pitcairn','Poland','Portugal','Puerto Rico','Qatar','Reunion','Romania','Russian Federation','Rwanda','Saint Helena','Saint Kitts and Nevis','Saint Lucia','Saint Pierre and Miquelon','Saint Vincent and The Grenadines','Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Georgia and The South Sandwich Islands','Spain','Sri Lanka','Sudan','Suriname','Svalbard and Jan Mayen','Swaziland','Sweden','Switzerland','Syrian Arab Republic','Taiwan, Province of China','Tajikistan','Tanzania, United Republic of','Thailand','Timor-leste','Togo','Tokelau','Tonga','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Turks and Caicos Islands','Tuvalu','Uganda','Ukraine','United Arab Emirates','United States Minor Outlying Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela','Viet Nam','Virgin Islands, British','Virgin Islands, U.S.','Wallis and Futuna','Western Sahara','Yemen','Zambia','Zimbabwe'];
   o.schoolSuffixes = _(o.forenames).filter(function() { return Math.random()<0.05; }).value();
   o.twitterUsernames = ['kirkouimet','damenleeturks','calebogden','aaronbushnell','rogie','jacobseethaler','daryl','kolage','VinThomas','ShaunMoynihan','zulsdesign','nckjrvs','timothycd','motherfuton','jayrobinson','cameronmoll','jayman','danielhaim','alagoon','andrewpautler','garrettgee','blakesimkins','gilbertglee','ogvidius','manspaugh','ripplemdk','paul_irish','Anotherdagou','ryanleroux','roybarberuk','_joshnh','todd_coleman','russellsmith21','designer_dean','PtiteNoli','walterstephanie','imfine_thankyou','utroda','NastyaVZ','tiagocamargo','mikebeecham','nimaa','sajtoo','AngelZxxWingZ','ariona_rian','OskarLevinson','feliperibeiros','jonsuh','leevigraham','ryanAmurphy','jsngr','axelbouaziz','kristijantaken','decarola','iamlouisbullock','dbox','molovo','Djeje','antoniopratas','matejsudar','mkalalang','WhatTheFerguson','SiskaFlaurensia','deimler','benhowdle','mds','itolmach','MarkusOkur','ckor','Alvaro_Nistal','bradenhamm','gabediaz','ThisIsJohnBrown','benpeck','pizzulata','haibnu','JuliaYunLiu','vctrfrnndz','daniel_love','redkeg','benefritz','jpadilla_','owlfurty','eldelentes','mambows','max9xs','waqar_alamgir','sjoerd_dijkstra','CrafterSama','calvintennant','smharley','sodevious','razvantugui','FreelanceNathan','renbyrd','adn','jjmpsp','Fitehal','meghanglass','acoops_','cibawoman','iamlouisbullock','desaiguddu','brianmaloney','HugoAlbonete','macvhustle','rizwaniqbal','fabioChannel','vehbikilic','kkbethi','poopsplat','wrightmartin','JeffChausse','faridelnasire','devstrong','odaymashalla','Rafa3mil','meddeg','brampitoyo','arjunchetna','toodlenoodle','iamjamie','jcarlosweb','temonehm','gerwitz','neweravin','hvillega','mozato','alek_djuric','mcmieras','zametniy','jwphillips','Fubaruba','luhman','Betraydan','dvidsilva'];
-  o.latinWords = ["ab", "aberant", "abscidit", "acervo", "ad", "addidit", "adhuc", "adsiduis", "adspirate", "aequalis", "aer", "aera", "aere", "aeris", "aestu", "aetas", "aethera", "aethere", "agitabilis", "aliis", "aliud", "alta", "altae", "alto", "ambitae", "amphitrite", "animal", "animalia", "animalibus", "animus", "ante", "aquae", "arce", "ardentior", "astra", "aurea", "auroram", "austro", "bene", "boreas", "bracchia", "caeca", "caecoque", "caeleste", "caeli", "caelo", "caelum", "caelumque", "caesa", "calidis", "caligine", "campoque", "campos", "capacius", "carentem", "carmen", "cepit", "certis", "cesserunt", "cetera", "chaos:", "cingebant", "cinxit", "circumdare", "circumfluus", "circumfuso", "coegit", "coeperunt", "coeptis", "coercuit", "cognati", "colebat", "concordi", "congeriem", "congestaque", "consistere", "contraria", "conversa", "convexi", "cornua", "corpora", "corpore", "crescendo", "cum", "cuncta", "cura", "declivia", "dedit", "deducite", "deerat", "dei", "densior", "deorum", "derecti", "descenderat", "deus", "dextra", "di", "dicere", "diffundi", "diremit", "discordia", "dispositam", "dissaepserat", "dissociata", "distinxit", "diu", "diversa", "diverso", "divino", "dixere", "dominari", "duae", "duas", "duris", "effervescere", "effigiem", "egens", "elementaque", "emicuit", "ensis", "eodem", "erant", "erat", "erat:", "erectos", "est", "et", "eurus", "evolvit", "exemit", "extendi", "fabricator", "facientes", "faecis", "fecit", "feras", "fert", "fidem", "figuras", "finxit", "fixo", "flamina", "flamma", "flexi", "fluminaque", "fontes", "foret", "forma", "formaeque", "formas", "fossae", "fratrum", "freta", "frigida", "frigore", "fronde", "fuerant", "fuerat", "fuit", "fulgura", "fulminibus", "galeae", "gentes", "glomeravit", "grandia", "gravitate", "habendum", "habentem", "habentia", "habitabilis", "habitandae", "haec", "hanc", "his", "homini", "hominum", "homo", "horrifer", "humanas", "hunc", "iapeto", "ignea", "igni", "ignotas", "illas", "ille", "illi", "illic", "illis", "imagine", "in", "inclusum", "indigestaque", "induit", "iners", "inmensa", "inminet", "innabilis", "inposuit", "instabilis", "inter", "invasit", "ipsa", "ita", "iudicis", "iuga", "iunctarum", "iussit", "lacusque", "lanient", "lapidosos", "lege", "legebantur", "levitate", "levius", "liberioris", "librata", "ligavit:", "limitibus", "liquidas", "liquidum", "litem", "litora", "locavit", "locis", "locoque", "locum", "longo", "lucis", "lumina", "madescit", "magni", "manebat", "mare", "margine", "matutinis", "mea", "media", "meis", "melior", "melioris", "membra", "mentes", "mentisque", "metusque", "militis", "minantia", "mixta", "mixtam", "moderantum", "modo", "moles", "mollia", "montes", "montibus", "mortales", "motura", "mundi", "mundo", "mundum", "mutastis", "mutatas", "nabataeaque", "nam", "natura", "naturae", "natus", "ne", "nebulas", "nec", "neu", "nisi", "nitidis", "nix", "non", "nondum", "norant", "nova", "nubes", "nubibus", "nullaque", "nulli", "nullo", "nullus", "numero", "nunc", "nuper", "obliquis", "obsistitur", "obstabatque", "occiduo", "omni", "omnia", "onerosior", "onus", "opifex", "oppida", "ora", "orba", "orbe", "orbem", "orbis", "origine", "origo", "os", "otia", "pace", "parte", "partim", "passim", "pendebat", "peragebant", "peregrinum", "permisit", "perpetuum", "persidaque", "perveniunt", "phoebe", "pinus", "piscibus", "plagae", "pluvialibus", "pluviaque", "poena", "pondere", "ponderibus", "pondus", "pontus", "porrexerat", "possedit", "posset:", "postquam", "praebebat", "praecipites", "praeter", "premuntur", "pressa", "prima", "primaque", "principio", "pro", "pronaque", "proxima", "proximus", "pugnabant", "pulsant", "quae", "quam", "quanto", "quarum", "quem", "qui", "quia", "quicquam", "quin", "quinta", "quisque", "quisquis", "quod", "quoque", "radiis", "rapidisque", "recens", "recepta", "recessit", "rectumque", "regat", "regio", "regna", "reparabat", "rerum", "retinebat", "ripis", "rudis", "sanctius", "sata", "satus", "scythiam", "secant", "secrevit", "sectamque", "secuit", "securae", "sed", "seductaque", "semina", "semine", "septemque", "sibi", "sic", "siccis", "sidera", "silvas", "sine", "sinistra", "sive", "sole", "solidumque", "solum", "sorbentur", "speciem", "spectent", "spisso", "sponte", "stagna", "sua", "subdita", "sublime", "subsidere", "sui", "suis", "summaque", "sunt", "super", "supplex", "surgere", "tanta", "tanto", "tegi", "tegit", "tellure", "tellus", "temperiemque", "tempora", "tenent", "tepescunt", "terra", "terrae", "terram", "terrarum", "terras", "terrenae", "terris", "timebat", "titan", "tollere", "tonitrua", "totidem", "totidemque", "toto", "tractu", "traxit", "triones", "tuba", "tum", "tumescere", "turba", "tuti", "ubi", "ulla", "ultima", "umentia", "umor", "unda", "undae", "undas", "undis", "uno", "unus", "usu", "ut", "utque", "utramque", "valles", "ventis", "ventos", "verba", "vesper", "videre", "vindice", "vis", "viseret", "vix", "volucres", "vos", "vultus", "zephyro", "zonae"];
+  o.htmlEncodedUnusualWords = ["XX&lt;XX", "XX&#163;XX", "XX&#172;XX"]; // <, £, ¬
+  o.unencodedUnusualWords = ["XX!XX", "XX\"XX", "XX$XX", "XX%XX", "XX^XX", "XX&XX", "XX*XX", "XX(XX", "XX)XX", "XX{XX", "XX}XX", "XX[XX", "XX]XX", "XX;XX", "XX:XX", "XX@XX", "XX'XX", "XX#XX", "XX~XX", "XX,XX", "XX>XX", "XX`XX", "XX|XX"];
+  o.unusualWords = _.union(o.htmlEncodedUnusualWords, o.unencodedUnusualWords); //words containing unusual characters (wrapped in XX so they're easier to spot)
+  o.latinWords = ["ab", "aberant", "abscidit", "acervo", "ad", "addidit", "adhuc", "adsiduis", "adspirate", "aequalis", "aer", "aera", "aere", "aeris", "aestu", "aetas", "aethera", "aethere", "agitabilis", "aliis", "aliud", "alta", "altae", "alto", "ambitae", "amphitrite", "animal", "animalia", "animalibus", "animus", "ante", "aquae", "arce", "ardentior", "astra", "aurea", "auroram", "austro", "bene", "boreas", "bracchia", "caeca", "caecoque", "caeleste", "caeli", "caelo", "caelum", "caelumque", "caesa", "calidis", "caligine", "campoque", "campos", "capacius", "carentem", "carmen", "cepit", "certis", "cesserunt", "cetera", "chaos", "cingebant", "cinxit", "circumdare", "circumfluus", "circumfuso", "coegit", "coeperunt", "coeptis", "coercuit", "cognati", "colebat", "concordi", "congeriem", "congestaque", "consistere", "contraria", "conversa", "convexi", "cornua", "corpora", "corpore", "crescendo", "cum", "cuncta", "cura", "declivia", "dedit", "deducite", "deerat", "dei", "densior", "deorum", "derecti", "descenderat", "deus", "dextra", "di", "dicere", "diffundi", "diremit", "discordia", "dispositam", "dissaepserat", "dissociata", "distinxit", "diu", "diversa", "diverso", "divino", "dixere", "dominari", "duae", "duas", "duris", "effervescere", "effigiem", "egens", "elementaque", "emicuit", "ensis", "eodem", "erant", "erat", "erectos", "est", "et", "eurus", "evolvit", "exemit", "extendi", "fabricator", "facientes", "faecis", "fecit", "feras", "fert", "fidem", "figuras", "finxit", "fixo", "flamina", "flamma", "flexi", "fluminaque", "fontes", "foret", "forma", "formaeque", "formas", "fossae", "fratrum", "freta", "frigida", "frigore", "fronde", "fuerant", "fuerat", "fuit", "fulgura", "fulminibus", "galeae", "gentes", "glomeravit", "grandia", "gravitate", "habendum", "habentem", "habentia", "habitabilis", "habitandae", "haec", "hanc", "his", "homini", "hominum", "homo", "horrifer", "humanas", "hunc", "iapeto", "ignea", "igni", "ignotas", "illas", "ille", "illi", "illic", "illis", "imagine", "in", "inclusum", "indigestaque", "induit", "iners", "inmensa", "inminet", "innabilis", "inposuit", "instabilis", "inter", "invasit", "ipsa", "ita", "iudicis", "iuga", "iunctarum", "iussit", "lacusque", "lanient", "lapidosos", "lege", "legebantur", "levitate", "levius", "liberioris", "librata", "ligavit", "limitibus", "liquidas", "liquidum", "litem", "litora", "locavit", "locis", "locoque", "locum", "longo", "lucis", "lumina", "madescit", "magni", "manebat", "mare", "margine", "matutinis", "mea", "media", "meis", "melior", "melioris", "membra", "mentes", "mentisque", "metusque", "militis", "minantia", "mixta", "mixtam", "moderantum", "modo", "moles", "mollia", "montes", "montibus", "mortales", "motura", "mundi", "mundo", "mundum", "mutastis", "mutatas", "nabataeaque", "nam", "natura", "naturae", "natus", "ne", "nebulas", "nec", "neu", "nisi", "nitidis", "nix", "non", "nondum", "norant", "nova", "nubes", "nubibus", "nullaque", "nulli", "nullo", "nullus", "numero", "nunc", "nuper", "obliquis", "obsistitur", "obstabatque", "occiduo", "omni", "omnia", "onerosior", "onus", "opifex", "oppida", "ora", "orba", "orbe", "orbem", "orbis", "origine", "origo", "os", "otia", "pace", "parte", "partim", "passim", "pendebat", "peragebant", "peregrinum", "permisit", "perpetuum", "persidaque", "perveniunt", "phoebe", "pinus", "piscibus", "plagae", "pluvialibus", "pluviaque", "poena", "pondere", "ponderibus", "pondus", "pontus", "porrexerat", "possedit", "posset", "postquam", "praebebat", "praecipites", "praeter", "premuntur", "pressa", "prima", "primaque", "principio", "pro", "pronaque", "proxima", "proximus", "pugnabant", "pulsant", "quae", "quam", "quanto", "quarum", "quem", "qui", "quia", "quicquam", "quin", "quinta", "quisque", "quisquis", "quod", "quoque", "radiis", "rapidisque", "recens", "recepta", "recessit", "rectumque", "regat", "regio", "regna", "reparabat", "rerum", "retinebat", "ripis", "rudis", "sanctius", "sata", "satus", "scythiam", "secant", "secrevit", "sectamque", "secuit", "securae", "sed", "seductaque", "semina", "semine", "septemque", "sibi", "sic", "siccis", "sidera", "silvas", "sine", "sinistra", "sive", "sole", "solidumque", "solum", "sorbentur", "speciem", "spectent", "spisso", "sponte", "stagna", "sua", "subdita", "sublime", "subsidere", "sui", "suis", "summaque", "sunt", "super", "supplex", "surgere", "tanta", "tanto", "tegi", "tegit", "tellure", "tellus", "temperiemque", "tempora", "tenent", "tepescunt", "terra", "terrae", "terram", "terrarum", "terras", "terrenae", "terris", "timebat", "titan", "tollere", "tonitrua", "totidem", "totidemque", "toto", "tractu", "traxit", "triones", "tuba", "tum", "tumescere", "turba", "tuti", "ubi", "ulla", "ultima", "umentia", "umor", "unda", "undae", "undas", "undis", "uno", "unus", "usu", "ut", "utque", "utramque", "valles", "ventis", "ventos", "verba", "vesper", "videre", "vindice", "vis", "viseret", "vix", "volucres", "vos", "vultus", "zephyro", "zonae"];
+  o.randomWords = _.union(o.unusualWords, o.latinWords);
 
   //basic lists
   var curriculums = [{"id":1,"name":"International Baccalaureate (DP)"},{"id":2,"name":"International Baccalaureate (MYP)"},{"id":3,"name":"International Baccalaureate (PYP)"},{"id":4,"name":"SAT Reasoning Test"},{"id":5,"name":"American College Testing (ACT)"},{"id":6,"name":"A-Levels"},{"id":7,"name":"IGCSE / GCSE"},{"id":8,"name":"French Baccalauréat"},{"id":9,"name":"German Abitur"},{"id":10,"name":"Titulo de Bachiller"},{"id":11,"name":"Australian SSCE"},{"id":12,"name":"Indian School Certificate"},{"id":13,"name":"Advanced Placement"},{"id":14,"name":"Early Years Foundation Stage (EYFS)"},{"id":15,"name":"International Primary (IPC)"},{"id":16,"name":"British Primary"},{"id":17,"name":"American"},{"id":18,"name":"Canadian"},{"id":19,"name":"Australian"},{"id":20,"name":"New Zealand"},{"id":21,"name":"Other"}];
@@ -160,7 +179,7 @@ app.factory('randomDataService', function(serverListsService) {
       //applications
       case 'datePutForward': return getRandomIsoDate(offsetDateByDays(-60), offsetDateByDays(0));
       //
-      case 'latinWord': return getRandomArrayItem(serverListsService.latinWords);
+      case 'randomWord': return getRandomArrayItem(serverListsService.randomWords);
     }
     return "WIP";
   };
@@ -190,7 +209,7 @@ app.factory('randomDataService', function(serverListsService) {
     return a;
   };
   var getRandomSentence = function() {
-    var s = getRandomArrayOfDataItems({ type: 'latinWord', length: getRandomInteger(1, 10) }).join(' ');
+    var s = getRandomArrayOfDataItems({ type: 'randomWord', length: getRandomInteger(1, 10) }).join(' ');
     return capitaliseFirstLetter(s) + '.';
   };
   var getRandomParagraph = function(minSentences, maxSentences) {
@@ -258,7 +277,7 @@ var deserializeParams = function(p){ //see https://github.com/pythondave/th-admi
 };
 
 //set dummy server responses to posts and gets
-app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, randomDataService) {
+app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, randomDataService, configService) {
   //note: $httpBackend requests are at the bottom
 
   //dummy responses (in the form of javascript objects)
@@ -266,11 +285,11 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
   //teachers
   var teachersResponse = function(method, url, data, headers) {
     var teachers;
-    var params = deserializeParams(data);
-    if (params.statusId === '3') { //teachers pending approval
+    var params = deserializeParams(data); //note: all params are now strings
+    if (params.statusIds === '3') { //teachers pending approval
       teachers = randomDataService.getRandomArrayOfObjects({ properties: ['id', 'fullName', 'profileUrl'], length: randomDataService.getRandomInteger(0, 100) });
     }
-    if (params.search && params.statusId === '1') { //search approved teachers
+    if (params.search && params.statusIds === '1') { //search approved teachers
       params.limit = params.limit || 5;
       teachers = [];
       var re = new RegExp(params.search, 'i');
@@ -281,7 +300,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
           var avatarUrl = randomDataService.getRandomDataItem('avatarUrl');
           teachers.push({ id: i, fullName: fullName, profileUrl: profileUrl, avatarUrl: avatarUrl });
         }
-        if (teachers.length === params.limit) break;
+        if (teachers.length == params.limit) break;
       }
     }
     var json = { "teachers": teachers };
@@ -321,7 +340,7 @@ app.run(function($httpBackend, $resource, $q, $timeout, serverListsService, rand
   var applicationsResponse = function(method, url, data, headers) {
     var applications;
     var params = deserializeParams(data);
-    if (params.statusId === '1') {
+    if (params.statusIds === '1') {
       applications = randomDataService.getRandomArrayOfObjects({ fn: randomDataService.getRandomApplicationForStatusId1, length: randomDataService.getRandomInteger(0, 100) });
     }
     if (params.jobId) {

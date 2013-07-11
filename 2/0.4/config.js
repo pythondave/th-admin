@@ -1,13 +1,8 @@
-app.config(function($httpProvider) {
-  $httpProvider.defaults.transformRequest = function(data) { //see https://github.com/pythondave/th-admin/issues/11
-    var actualRequestData = (data === undefined ? undefined : $.param(data));
-    //console.log(data, actualRequestData);
-    return actualRequestData;
-  };
-});
 
-app.value('config', function() {
-  var o = {};
+app.value('configService', function() {
+  var o = { user: {} };
+
+  o.loginUrl = './user/logon';
 
   var requestUrlRoot = '/admin/service/';
   o.requests = {
@@ -35,5 +30,5 @@ app.value('config', function() {
       basicLists: requestUrlRoot + 'basic-lists',
       schoolNames: requestUrlRoot + 'school-names'
   };
-  return o;
+  return o; // function() { return o; };
 }());

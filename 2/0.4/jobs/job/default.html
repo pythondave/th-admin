@@ -24,7 +24,7 @@
 </div>
 
 <div ng-show="applications.length==0">
-  <p>No applications found for this job</p>
+  <p>No applications have yet been put forward for this job.</p>
 </div>
 
 <div style="clear: both; " ng-show="applications.length>0" class="summary">{{applications.length}} candidates</div>
@@ -60,7 +60,7 @@
       <td ng-click="a.expanded=!a.expanded">
         <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 24px; " />
         <a class="point">{{a.teacher.fullName}}</a>
-        <span simple-tooltip="{ text:'{{a.coverMessage}}', placement: 'right', class: 'tooltip-wide', heading: 'Cover Message' }" class="point">
+        <span simple-tooltip="{{a.coverMessage}}" simple-tooltip-options="{ placement: 'right', class: 'tooltip-wide', heading: 'Cover Message' }" class="point">
           <i ng-show="a.coverMessage" class="icon-comment"></i>
         </span>
         <span simple-tooltip="Put forward {{a.datePutForward | date:'EEE dd MMM yyyy h:mma'}}" ng-show="a.daysSincePutForward < 3" class="new">new<span>
@@ -97,7 +97,7 @@
             <span ng-repeat="s in scores" class="badge point" ng-click="processTeacher(a.teacher, $index)"
                   ng-class="{true:a.teacher.badgeClass, false:s.hoverClass}[$index==a.teacher.score];" style="margin-right: 3px;">{{$index}}</span>
             <span class="badge point" ng-class="a.badgeClass" style="margin: 0 15px;" simple-tooltip="Score for application (assigned by school)">{{a.score}}</span>
-            <span simple-tooltip="{ text:'{{a.schoolNote}}', placement: 'left', class: 'tooltip-wide', heading: 'School Note' }" class="point">
+            <span simple-tooltip="{{a.schoolNote}}" simple-tooltip-options="{ placement: 'left', class: 'tooltip-wide', heading: 'School Note' }" class="point">
               <i ng-show="a.schoolNote" class="icon-comment"></i>
             </span>
           </div>

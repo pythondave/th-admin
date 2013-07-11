@@ -16,7 +16,7 @@ app.controller('ApplicationsMenuCtrl', function($scope, applicationsService) {
 });
 
 app.controller('ApplicationsCtrl', function($scope, applicationsService, scoresService, alertService, applicationStatusesService) {
-  applicationsService.getAndSetData({ statusId: 1 }); //applications with status of 'Applied' (i.e. not yet 'Put forward' or 'Declined')
+  applicationsService.getAndSetData({ statusIds: '1' }); //applications with status of 'Applied' (i.e. not yet 'Put forward' or 'Declined')
   $scope.sort = applicationsService.list.sort;
   $scope.badgeClass = scoresService.badgeClass;
 

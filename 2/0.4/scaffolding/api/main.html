@@ -1,34 +1,50 @@
 <div style="max-width: 900px;">
   <h3 style="float: left;">Server API Viewer</h3>
   <a href="../../../../default.html" style="float: right; margin-top: 25px;">Dashboard</a>
-  <div class="field" style="clear: both; padding-top: 20px;">
-    <span class="field-label">Request URL (<span>{{requests.length}}</span>): </span>
-    <select class="field-value" ng-change="query=request.queries[0]; processRequest(request); " ng-model="request"
-      ng-options="r.url group by r.group for r in requests"></select>
-    <a ng-show="request" href="{{getRequestLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
+  <div style="clear: both; margin: 40px 0;">
+    <div class="field">
+      <span class="field-label">Logged in: </span>
+      <span class="field-value">
+        <input type="checkbox" ng-model="userIsLoggedIn">
+      </span>
+    </div>
+    <div class="field">
+      <span class="field-label">Request URL (<span>{{requests.length}}</span>): </span>
+      <select class="field-value" ng-change="query=request.queries[0]; processRequest(request); " ng-model="request"
+        ng-options="r.url group by r.group for r in requests"></select>
+      <a ng-show="request" href="{{getRequestLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
+    </div>
+    <div ng-show="!!request">
+      <div class="field">
+        <span class="field-label">Description: </span>
+        <p class="field-value">{{request.description}}</p>
+      </div>
+      <div class="field light">
+        <span class="field-label">History: </span>
+        <span class="field-value">Sprint added: {{request.sprintAdded}}; Sprint last updated: {{request.sprintLastUpdated}}</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Query data (<span>{{request.queries.length}}</span>): </span>
+        <select class="field-value" ng-change="processRequest(request)" ng-model="query" ng-options="q.dataToPost | json for q in request.queries"></select>
+        <a ng-show="query" href="{{getQueryLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
+      </div>
+      <div class="field">
+        <span class="field-label">Description: </span>
+        <p class="field-value">{{query.description}}</p>
+      </div>
+      <div class="field light">
+        <span class="field-label">Serialized query data: </span>
+        <span class="field-value">{{query.dataToPost | param}}</span>
+      </div>
+      <button class="btn btn-request" ng-click="processRequest(request)">Request</button>
+    </div>
   </div>
-  <div ng-show="!!request">
-    <div class="field">
-      <span class="field-label">Description: </span>
-      <p class="field-value">{{request.description}}</p>
-    </div>
-    <div class="field">
-      <span class="field-label">History: </span>
-      <span class="field-value">Sprint added: {{request.sprintAdded}}; Sprint last updated: {{request.sprintLastUpdated}}</span>
-    </div>
-    <div class="field">
-      <span class="field-label">Query data (<span>{{request.queries.length}}</span>): </span>
-      <select class="field-value" ng-change="processRequest(request)" ng-model="query" ng-options="q.dataToPost | json for q in request.queries"></select>
-      <a ng-show="query" href="{{getQueryLink()}}" target="_blank" style="margin: 0 0 0 8px; ">Link</a>
-    </div>
-    <div class="field">
-      <span class="field-label">Description: </span>
-      <p class="field-value">{{query.description}}</p>
-    </div>
-    <button class="btn btn-request" ng-click="processRequest(request)">Request</button>
-    <br/>
-    <hr/>
+  <hr/>
+  <div>
     <h4>Example response</h4>
+    <div ng-show="requestUnauthorized" style="background-color: red; padding: 5px; ">
+      Request unauthorized (401 error) - can't process this request if not logged in
+    </div>
     <h5>Summary</h5>
     <ul ng-show="keys">
       <li>Keys: {{keys | json}}</li>
