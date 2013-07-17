@@ -170,7 +170,7 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, jobService, ap
     if (!application.dirty) {
       $scope.debounceFunction = _.debounce(function() {
         var d = $scope.processData;
-        $scope.process(d.application, d.dataToPost);
+        $scope.processTeacher(d.application.teacher, d.dataToPost); //currently only used to process a teacher's adminNote
         d.application.dirty = false;
       }, 2000);
     }
@@ -202,19 +202,19 @@ app.controller('JobCtrl', function($scope, $stateParams, $dialog, jobService, ap
     process.then(success).then(alertService.success, alertService.error);
   };
 
-  $scope.process = function(application, dataToPost) {
-    var process = applicationsService.process(application, dataToPost, { removeFromList: false }); //promise
-    var message = 'Updated {{fullName}}\'s application note'; //this function isn't used for anything else right now
-    alertService.setVariables({ fullName: application.teacher.fullName, success: { message: message } });
-    process.then(alertService.success, alertService.error);
-  };
-
-  $scope.processTeacher = function(teacher, score) {
-    var process = teacherService.process(teacher, { score: score });
-    var setScore = function() { teacher.score = score; applicationsService.setDerivedData(); };
-    var message = 'Updated {{fullName}}\'s score to {{score}}';
-    alertService.setVariables({ fullName: teacher.fullName, score: score, success: { message: message } });
-    process.then(setScore).then(alertService.success, alertService.error);
+  $scope.processTeacher = function(teacher, dataToPost) {
+    var process = teacherService.process(teacher, dataToPost);
+    var setLocals = function() {
+      if (dataToPost.score !== undefined) {
+        teacher.score = dataToPost.score;
+        applicationsService.setDerivedData();
+      }
+    };
+    var message;
+    if (dataToPost.score !== undefined) message = 'Updated {{fullName}}\'s score to {{score}}';
+    if (dataToPost.adminNote !== undefined) message = 'Updated {{fullName}}\'s admin note';
+    alertService.setVariables({ fullName: teacher.fullName, score: dataToPost.score, success: { message: message } });
+    process.then(setLocals).then(alertService.success, alertService.error);
   };
 
   $scope.getStatusClass = function(application, status) {

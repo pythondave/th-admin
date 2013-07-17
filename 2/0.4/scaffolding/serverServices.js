@@ -244,7 +244,7 @@ app.factory('randomDataService', function(serverListsService) {
       a.statusId = getRandomArrayItem([2,4,5,6,7,8]);
       a.statusDate = getRandomDataItem('statusDate');
       a.previousStatusId = getRandomArrayItem(_.filter([1,2,4,5,6,7,8], function(x) { return x < a.statusId; }));
-      if (Math.random() < 0.5) a.adminNote = getRandomMultiParagraphMessage(1, 3);
+      if (Math.random() < 0.5) a.teacher.adminNote = getRandomMultiParagraphMessage(1, 3);
       if (Math.random() < 0.5) a.schoolNote = getRandomMultiParagraphMessage(1, 8);
       if (Math.random() < 0.8) a.score = getRandomDataItem('score');
       if (Math.random() < 0.8) a.coverMessage = getRandomMultiParagraphMessage(1, 8);

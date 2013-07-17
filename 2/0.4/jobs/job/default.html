@@ -94,14 +94,14 @@
           <div>
             <a ng-href="{{a.teacher.profileUrl}}" target="_blank" style="margin-right: 10px;">View profile</a>
 
-            <span ng-repeat="s in scores" class="badge point" ng-click="processTeacher(a.teacher, $index)"
+            <span ng-repeat="s in scores" class="badge point" ng-click="processTeacher(a.teacher, { score: $index })"
                   ng-class="{true:a.teacher.badgeClass, false:s.hoverClass}[$index==a.teacher.score];" style="margin-right: 3px;">{{$index}}</span>
             <span class="badge point" ng-class="a.badgeClass" style="margin: 0 15px;" simple-tooltip="Score for application (assigned by school)">{{a.score}}</span>
             <span simple-tooltip="{{a.schoolNote}}" simple-tooltip-options="{ placement: 'left', class: 'tooltip-wide', heading: 'School Note' }" class="point">
               <i ng-show="a.schoolNote" class="icon-comment"></i>
             </span>
           </div>
-          <textarea style="margin: 5px; width: 100%; min-height: 70px;" ng-model="a.adminNote" ng-change="processWithThrottle(a, { adminNote: a.adminNote })"></textarea>
+          <textarea style="margin: 5px; width: 100%; min-height: 70px;" ng-model="a.teacher.adminNote" ng-change="processWithThrottle(a, { adminNote: a.teacher.adminNote })"></textarea>
         </div>
         <img ng-src="{{a.teacher.avatarUrl}}" style=" width: 120px; float: right; " />
       <td>

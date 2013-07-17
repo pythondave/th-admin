@@ -23,9 +23,9 @@ app.controller('mainController', function($scope) {
       notes: 'to... shortlisted, interviewed, offer made, accepted or rejected',
       demos: ['/jobs/123?change-status-of-application']
     },
-    { id: 6, group: 'Admin', title: 'add an admin note to an application',
+    { id: 6, group: 'Admin', title: 'add an admin note to a teacher',
       notes: '',
-      demos: ['/jobs/123?add-admin-note-to-application']
+      demos: ['/jobs/123?add-admin-note-to-teacher']
     },
     { id: 7, group: 'Admin', title: '...',
       notes: '*** We should expand this to include all use cases actually covered ***'

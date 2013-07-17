@@ -253,6 +253,11 @@ app.controller('MainCtrl', function($scope, configService, $http, $state) {
           dataToPost: { teacherId: 123, score: 7 },
           description: 'Assign a score to a teacher',
           useCaseIds: [3]
+        },
+        {
+          dataToPost: { teacherId: 123, adminNote: 'Here\'s an admin note' },
+          description: 'Update the admin note of a teacher',
+          useCaseIds: [6]
         }
       ]
     },
